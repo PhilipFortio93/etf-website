@@ -1,0 +1,13 @@
+.custom-button {
+  padding: 16px 30px !important;
+  border-radius: 50px !important;
+  font-weight: bold;
+  background-color: #642079;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 13px;
+  box-shadow: 23px 23px 72px 0px rgba(40,10,71,0.14);
+  display: inline-block;
+  color: white !important;
+}

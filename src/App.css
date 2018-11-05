@@ -1,5 +1,74 @@
+@font-face {
+  font-family: 'Bariol';
+  font-style: normal;
+  font-weight: 100;
+  src:
+    local('Bariol Thin'),
+    local('Bariol-Thin'),
+    url(assets/font/Bariol_Thin.otf) format('otf');
+}
+
+@font-face {
+  font-family: 'Bariol';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local('Bariol'),
+    local('Bariol-Regular'),
+    url(assets/font/Bariol_Regular.otf) format('otf');
+}
+
+@font-face {
+  font-family: 'Bariol';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    local('Bariol Bold'),
+    local('Bariol-Bold'),
+    url(assets/font/Bariol_Bold.otf) format('otf');
+}
+
 .App {
   text-align: center;
+}
+
+.custom-card {
+  border: none;
+  background: #fff;
+  float: left;
+  -webkit-box-shadow: 0px 0px 53px 0px rgba(0,0,0,0.1);
+  position: relative;
+  -moz-box-shadow: 0px 0px 53px 0px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 53px 0px rgba(0,0,0,0.1);
+  text-align: center;
+  color: #131141;
+  width: 100%;
+}
+
+.custom-card .img {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+@media screen and (min-width: 768px){
+  .custom-card {
+      height: 100%;
+  }
+}
+
+.custom-card.card-body {
+  border-radius: 10px;
+}
+
+.custom-card > h5 {
+  font-size: 34px;
+  line-height: 26px;
+  margin: 20px;
+}
+
+.custom-card > p {
+  font-size: 16px;
+  line-height: 22px;
 }
 
 .App-logo {
@@ -8,14 +77,96 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
+  min-height: 90vh;
+  width: 100%;
+  /* display: flex; */
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  padding-top: 180px;
+}
+
+.App-header .image {
+  height: 80vh;
+  /* width: 100%; */
+  position: absolute;
+  /* position: fixed; */
+  top: 100px;
+  right: 0px;
+  z-index: -100;
+}
+
+.App-header .image img {
+  height: 100%;
+}
+
+@media screen and (max-width: 991px){
+  .App-header .image img {
+    display: none;
+  }
+}
+
+.App-header h1 {
+  font-weight: 700;
+  color: #642079;
+  font-size: 80px;
+}
+
+.App-header h2 {
+  font-weight: 100;
+  color: #642079;
+  font-size: 40px;
+}
+
+.App-header p {
+  font-weight: 100;
+  color: #642079;
+  font-size: 18px;
+  /* text-align: left; */
+}
+
+
+@media screen and (max-width: 575px){
+  .App-header h1 {
+    font-size: 36px;
+    line-height: 40px;
+  }
+}
+
+@media screen and (max-width: 767px){
+  .App-header h1 {
+      font-size: 42px;
+      line-height: 42px;
+  }
+}
+
+@media screen and (max-width: 991px){
+  .App-header h1 {
+      font-size: 46px;
+      line-height: 56px;
+  }
+}
+
+@media screen and (max-width: 1024px){
+  .App-header h1 {
+      font-size: 58px;
+      line-height: 68px;
+  }
+}
+
+@media screen and (max-width: 1400px){
+  .App-header h1 {
+      font-size: 64px;
+      line-height: 76px;
+  }
+}
+
+@media screen and (max-width: 1599px){
+  .App-header h1 {
+      font-size: 70px;
+      line-height: 1.3;
+  }
 }
 
 .App-link {
@@ -29,4 +180,79 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+#Better {
+  background-image: linear-gradient(transparent, #EFF2F7, transparent);
+}
+
+#Features .textCol {
+  padding-top: 120px;
+}
+
+#Features .textCol span {
+  font-size: 20px;
+  color: #642079;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  text-align: left;
+  display: block;
+  position: relative;
+  padding-left: 65px;
+  letter-spacing: 1.6px;
+}
+
+@media screen and (max-width: 767px){
+  .hide-phone {
+    display: none;
+  }
+
+}
+@media screen and (min-width: 768px){
+  .dont-hide-phone {
+    display: none;
+  }
+}
+
+#Features .textCol span:before {
+    content: "";
+    width: 45px;
+    height: 1px;
+    background: #642079;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#Features .textCol p {
+  line-height: 2;
+  font-size: 18px;
+  text-align: left;
+}
+
+#PrivacyPolicy {
+  padding-top: 180px;
+  padding-bottom: 100px;
+}
+
+#PrivacyPolicy p {
+  font-size: 14px;
+}
+
+
+#LearnMore {
+  padding: 60px;
+}
+
+#Team {
+  background-image: linear-gradient(transparent, #EFF2F7, transparent);
+  color: #642079;
+  padding-top: 150px;
+  padding-bottom: 150px;
+}
+
+#Demo {
+  padding: 100px;
 }
