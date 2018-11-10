@@ -5,6 +5,7 @@ import key from './assets/img/key.svg';
 import './App.css';
 import Nav from './components/Nav';
 import { Container, Row, Col, Card, CardTitle, CardText, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import Button from './components/Button';
 import { Player } from 'video-react';
 import one from './assets/img/one.png';
@@ -54,19 +55,15 @@ class App extends Component {
                   21st Century <span style={{fontWeight: 900}}>Fund Managment</span>
                 </h2>
                 <p>
-                  <span style={{fontWeight: 700}}>One Investor. One Fund. One Ledger. </span>
+                  <span style={{fontWeight: 700}}>The standard for Fund Backed tokens</span>
                   <br/>
-                  Why does anyone else need to be involved?
                 </p>
                 <p style={{color: "#031241"}}>
-                  Use one ledger accross the lifecycle of your fund.
-                  Reduce operational risk, reconciliations and fee layering.
-                  Compete with the biggest providers.
+                  Use one ledger across the whole lifecycle of your fund.<br/>
+                  Reduce operational risk, reconciliations and fee layering.<br/>
+                <br/>
+                  It all starts with a <Link to="/standard">standard</Link>
                 </p>
-                <Button
-                  href="/#LearnMore"
-                  >How do we do it?
-                </Button>
               </Col>
               <Col md={6} xs={12}></Col>
             </Row>
@@ -75,8 +72,9 @@ class App extends Component {
         <section id="Better">
           <p style={{fontSize: '21px'}}>
             We’ve taken all the best Distributed Ledger Technology (DLT) bits and stuck them in one platform.
-          </p><p style={{fontSize: '21px'}}>
-            Internalise services and compete with the biggest issuers on the street.
+          </p>
+          <p style={{fontSize: '21px'}}>
+          Internalise services and compete with the biggest issuers on the street.
           </p>
           <Container>
             <Row>
@@ -89,13 +87,13 @@ class App extends Component {
               <Col lg={3} md={6} xs={12} style={{padding: "20px"}}>
                 <Card body className="custom-card">
                   <img className="img" src={registrar} />
-                    <p>Maintains the list of fund holders. Sounds like a ledger.</p>
+                  <p>Maintains the list of fund holders. Sounds like a ledger.</p>
                 </Card>
               </Col>
               <Col lg={3} md={6} xs={12} style={{padding: "20px"}}>
                 <Card body className="custom-card">
                   <img className="img" src={reconAgent} />
-                    <p>Ensures everyone is in agreement about the state of any trades. Inherent in DLT.</p>
+                  <p>Ensures everyone is in agreement about the state of any trades. Inherent in DLT.</p>
                 </Card>
               </Col>
               <Col lg={3} md={6} xs={12} style={{padding: "20px"}}>

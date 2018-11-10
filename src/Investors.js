@@ -115,7 +115,7 @@ export default class Investors extends React.Component {
                 <img src={buyAlongside} style={{width: "100%"}}/>
               </Col>
               <Col className='textCol' xs={12} md={6}>
-                <span>3. Mates Rates - Trade digital shares directly with your mates, no spreads</span>
+                <span>3. Easy market access</span>
                 <p>
                   Finally an easily accessible secondary market for mutual funds. <br/>
                   Trade whenever with whoever.

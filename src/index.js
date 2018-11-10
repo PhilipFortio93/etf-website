@@ -5,6 +5,7 @@ import App from './App';
 import Demo from './Demo';
 import Investors from './Investors';
 import PrivacyPolicy from './PrivacyPolicy';
+import Standard from './Standard';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import "video-react/dist/video-react.css"; // import css
@@ -30,6 +31,11 @@ ReactDOM.render(
         path='/privacy-policy'
         exact={true}
         component={PrivacyPolicy}
+      />
+      <Route
+        path='/standard'
+        exact={true}
+        component={Standard}
       />
       <Route
         path='/demo'

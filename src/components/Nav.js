@@ -20,6 +20,7 @@ export default class _Nav extends React.Component {
       href: '/investors',
       name: 'Investors'
     }];
+    links = []
     if(props.location.pathname === '/') {
       links = links.concat([{
         href: '#Features',
