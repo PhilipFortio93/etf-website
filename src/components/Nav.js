@@ -17,10 +17,15 @@ export default class _Nav extends React.Component {
   }
   updateLinks(props){
     let links = [{
+      href: '/',
+      name: 'Home'
+    },{
       href: '/investors',
       name: 'Investors'
+    },{
+      href: '/standard',
+      name: 'Standard'
     }];
-    links = []
     if(props.location.pathname === '/') {
       links = links.concat([{
         href: '#Features',

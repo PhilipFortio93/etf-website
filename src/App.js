@@ -64,6 +64,10 @@ class App extends Component {
                 <br/>
                   It all starts with a <Link to="/standard">standard</Link>
                 </p>
+                <Button
+                  href="/#LearnMore"
+                  >How do we do it?
+                </Button>
               </Col>
               <Col md={6} xs={12}></Col>
             </Row>
