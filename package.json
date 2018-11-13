@@ -20,7 +20,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "invalidation": "aws cloudfront create-invalidation --distribution-id E414RJKI0OLFW --paths /\\*",
-    "deploy": "aws s3 sync build/ s3://tokenblocks-landing && npm run invalidation"
+    "deploy": "npm run build && aws s3 sync build/ s3://tokenblocks-landing && npm run invalidation"
   },
   "eslintConfig": {
     "extends": "react-app"
