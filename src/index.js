@@ -6,6 +6,9 @@ import Demo from './Demo';
 import Investors from './Investors';
 import PrivacyPolicy from './PrivacyPolicy';
 import Standard from './Standard';
+import Login from './Login';
+import Products from './Products';
+import Home from './Home';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import "video-react/dist/video-react.css"; // import css
@@ -26,6 +29,21 @@ ReactDOM.render(
         path='/investors'
         exact={true}
         component={Investors}
+      />
+      <Route
+        path='/login'
+        exact={true}
+        component={Login}
+      />
+      <Route
+        path='/product'
+        exact={true}
+        component={Products}
+      />
+      <Route
+        path='/home'
+        exact={true}
+        component={Home}
       />
       <Route
         path='/privacy-policy'

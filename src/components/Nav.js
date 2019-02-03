@@ -19,20 +19,37 @@ export default class _Nav extends React.Component {
     let links = [{
       href: '/',
       name: 'Home'
+    }
+    /*,{
+     href: '/investors',
+     name: 'Investors'
     },{
-      href: '/investors',
-      name: 'Investors'
-    },{
-      href: '/standard',
-      name: 'Standard'
+     href: '/standard',
+     name: 'Standard'
+    }*/
+    ,{
+     href: '/product',
+     name: 'Products'
     }];
     if(props.location.pathname === '/') {
       links = links.concat([{
         href: '#Features',
         name: 'Features'
       },{
+        href: '#Partners',
+        name: 'Partners'
+      },{
         href: '#LearnMore',
         name: 'Learn more'
+      }]);
+    }
+    if(props.location.pathname === '/product') {
+      links = links.concat([{
+        href: '#Investordata',
+        name: 'Investor Data'
+      },{
+        href: '#Tradedata',
+        name: 'Trade Data'
       }]);
     }
     if(props.location.pathname === '/investors') {
