@@ -1,0 +1,64 @@
+table th{
+    padding:3px !important;
+    font-size: 12px !important;
+}
+
+table td{
+	padding:3px !important;
+    font-size: 10px !important;
+}
+
+.clickablelabel:hover {
+  color: blue;
+  text-decoration: underline;
+}
+
+
+.mainPanel .ant-collapse-header{
+	font-size: 24px !important;
+	font-weight:bold;
+}
+
+.ant-steps{
+	font-size: 6px !important;
+}
+
+.ant-steps-item-content{
+	padding:0px !important;
+	margin:0px !important;
+	width:20% !important;
+}
+/*
+.container{
+	background-color: #702632 !important;
+}
+
+.mainPanel{
+	background-color: #702632 !important;
+}
+
+.topdetail{
+	background-color: #702632 !important;
+}*/
+
+.ant-btn {
+	background-color: #702632 ;
+	border-color: #702632 ;
+}
+/*div {
+	background-color: #702632 ;
+}*/
+/*div .ant-collapse-item {
+	background-color: white !important;
+	font-color: white !important;
+}*/
+
+/*.ant-collapse-content {
+
+	color: white !important;
+}
+
+.ant-collapse-header {
+
+	color: white !important;
+}*/

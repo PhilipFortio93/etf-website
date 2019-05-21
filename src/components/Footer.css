@@ -1,11 +1,15 @@
 #Footer {
   padding: 30px;
-  background-color: #EFF2F7;
-  color: #642079;
+  background-color: #702632;
+  color: white;
 }
 
 #Footer a {
-  color: #642079 !important;
+  color: white !important;
+}
+
+#Footer h5 {
+  color: white !important;
 }
 
 @media screen and (min-width: 768px) {

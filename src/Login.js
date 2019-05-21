@@ -1,39 +1,9 @@
 import React from 'react';
-import board from './assets/img/board.svg';
-import safe from './assets/img/safe.svg';
-import key from './assets/img/key.svg';
 import './App.css';
 import Nav from './components/Nav';
-import { Container, Row, Col, Card, CardTitle, CardText, Form, FormGroup, Label, Input } from 'reactstrap';
-import Button from './components/Button';
-import { Player } from 'video-react';
-import one from './assets/img/one.png';
-import two from './assets/img/two.png';
-import three from './assets/img/three.png';
-import four from './assets/img/four.png';
-import web from './assets/img/web.png';
-import web2 from './assets/img/web2.png';
-import chooseToken from './assets/img/chooseToken.webp';
-import buyAlongside from './assets/img/buyAlongside.webp';
-import forgetMiddlemen from './assets/img/forgetMiddlemen.webp';
-import regulated from './assets/img/regulated.webp';
-import savvy from './assets/img/savvy.png';
-import HubspotForm from 'react-hubspot-form';
-
-import tom from './assets/img/tom.webp';
-import phil from './assets/img/phil.webp';
-
+import { Container, Row, Col} from 'reactstrap';
 import Footer from './components/Footer';
-import scale from './assets/img/scale2.png';
-import clearingHouse from "./assets/img/clearing-house.png";
-import fundAdministrator from "./assets/img/fund-administrator.png";
-import fundAuditor from "./assets/img/fund-auditor.png";
-import fundCustodian from "./assets/img/fund-custodian.png";
-import fundEvaluator from "./assets/img/fund-evaluator.png";
-import reconAgent from "./assets/img/recon-agent.png";
-import registrar from "./assets/img/registrar.png";
-import transferAgent from "./assets/img/transfer-agent.png";
-import Vimeo from 'react-vimeo';
+
 
 
 class NameForm extends React.Component {
@@ -90,7 +60,7 @@ export default class Login extends React.Component {
         <Nav {...this.props} />
         <header className="App-header">
           <div class="image">
-            <img src={savvy} />
+
           </div>
           <Container>
             <Row>

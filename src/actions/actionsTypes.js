@@ -1,0 +1,7 @@
+export const PORTFOLIO_DELETE = 'PORTFOLIO_DELETE';
+export const PORTFOLIO_ADD = 'PORTFOLIO_ADD';
+export const PORTFOLIO_UPDATE = 'PORTFOLIO_UPDATE';
+export const LOADING = 'LOADING_SCREEN';
+export const ALL_LOAD = 'ALL_LOAD';
+export const SHOW_GLOSSARY = 'SHOW_GLOSSARY';
+// export const TOTAL_UPDATE = 'TOTAL_UPDATE';

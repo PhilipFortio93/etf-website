@@ -2,6 +2,8 @@ import React from 'react';
 import {Container,Row,Col} from 'reactstrap';
 import logo from '../assets/img/logo.webp';
 import {Link} from 'react-router-dom';
+import logotwo from '../assets/img/HighResLogoTrans.png';
+import { Icon } from 'antd';
 import './Footer.css';
 
 export default class Footer extends React.Component {
@@ -11,8 +13,8 @@ export default class Footer extends React.Component {
         <Container>
           <Row>
             <Col md={3} style={{textAlign: 'center'}}>
-              <img src={logo} className="logo" style={{height: '100px'}}/>
-              <h3>TokenBlocks</h3>
+            <Icon type="sliders" style={{fontSize:"36px", color:'white'}} />
+            Torch
             </Col>
             <Col md={3}>
               <h5>Address</h5>
@@ -26,10 +28,10 @@ export default class Footer extends React.Component {
             </Col>
             <Col md={3}>
               <h5>Get in touch</h5>
-              <p>hello@tokenblocks.io</p>
+              <p>hello@torch.io</p>
             </Col>
             <Col md={3}>
-              <p>© TokenBlocks 2018</p>
+              <p>© Torch 2019</p>
               <a href="privacy-policy">Privacy policy</a>
             </Col>
           </Row>

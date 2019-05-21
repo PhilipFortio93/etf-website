@@ -3,66 +3,78 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import Demo from './Demo';
-import Investors from './Investors';
 import PrivacyPolicy from './PrivacyPolicy';
-import Standard from './Standard';
 import Login from './Login';
-import Products from './Products';
-import Home from './Home';
+import toolpage from './toolpage';
+import custompage from './CustomPortfolio';
+import etfpage from './etfpage';
+import glossary from './components/Glossary';
+import etfsearch from './etfsearch';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import "video-react/dist/video-react.css"; // import css
 import { createBrowserHistory } from "history";
 import { Router, Route, Redirect, Switch } from "react-router-dom";
+import configureStore from './store/configureStore';
+import {Provider} from 'react-redux';
 
 const hist = createBrowserHistory();
 
+let store = configureStore();
+
 ReactDOM.render(
-  <Router history={hist} onUpdate={() => window.scrollTo(0, 0)} >
-    <Switch>
-      <Route
-        path='/'
-        exact={true}
-        component={App}
-      />
-      <Route
-        path='/investors'
-        exact={true}
-        component={Investors}
-      />
-      <Route
-        path='/login'
-        exact={true}
-        component={Login}
-      />
-      <Route
-        path='/product'
-        exact={true}
-        component={Products}
-      />
-      <Route
-        path='/home'
-        exact={true}
-        component={Home}
-      />
-      <Route
-        path='/privacy-policy'
-        exact={true}
-        component={PrivacyPolicy}
-      />
-      <Route
-        path='/standard'
-        exact={true}
-        component={Standard}
-      />
-      <Route
-        path='/demo'
-        exact={true}
-        component={Demo}
-      />
-      <Route render={() => <Redirect to="/"/>}/>
-    </Switch>
-  </Router>,
+  <Provider store={store}>
+    <Router history={hist} onUpdate={() => window.scrollTo(0, 0)} >
+      <Switch>
+        <Route
+          path='/'
+          exact={true}
+          component={App}
+        />
+        <Route
+          path='/login'
+          exact={true}
+          component={Login}
+        />
+        <Route
+          path='/toolpage'
+          exact={true}
+          component={toolpage}
+        />
+        <Route
+          path='/custompage'
+          exact={true}
+          component={custompage}
+        />
+        <Route
+          path='/glossary'
+          exact={true}
+          component={glossary}
+        />
+        <Route
+          path='/etfsearch/:id'
+          exact={true}
+          component={etfpage}
+        />
+        <Route
+          path='/etfsearch'
+          exact={true}
+          component={etfsearch}
+        />
+        <Route
+          path='/privacy-policy'
+          exact={true}
+          component={PrivacyPolicy}
+        />
+        <Route
+          path='/demo'
+          exact={true}
+          component={Demo}
+        />
+        <Route render={() => <Redirect to="/"/>}/>
+      </Switch>
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
