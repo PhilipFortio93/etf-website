@@ -10,13 +10,17 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
+import Glossary from './components/Glossary';
 import {
   Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Switch
 } from 'antd';
 import "antd/dist/antd.css";
 import "./etfpage.css";
-import FacebookLogin from 'react-facebook-login';
-
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import portfolioActions from './actions/actions';
+import _ from "lodash";
+import {NAVComparison} from './components/mathsfunctions';
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 
@@ -64,7 +68,7 @@ function stringToDate(_date,_format,_delimiter)
     console.log(key);
   }
 
-export default class Standard extends React.Component {
+class ETFPage extends React.Component {
 
 
 
@@ -81,7 +85,7 @@ export default class Standard extends React.Component {
       historicaldata: [],
       dividendsdata: [],
       pricedata: [],
-      loading:true,
+      loading: false,
       alldata: [],
       showgraph:false,
       screenWidth:null,
@@ -97,8 +101,7 @@ export default class Standard extends React.Component {
   }
 
   onChange(value) {
-    this.setState({loading:true});
-
+    this.setState({loading:true})
     let selected = value;
     let url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
 
@@ -111,70 +114,28 @@ export default class Standard extends React.Component {
         // 'Access-Control-Allow-Origin':'*'
       }
     }).then(res => res.json())
-    .then(res => this.setState({overviewdata:res,loading:false,selected:value}))
+    .then(res => {
+      this.setState({overviewdata:res,selected:value,loading:false});
+      this.getData(value)
+    })
     .catch(error => console.error('Error:', error));
-
+    
   }
   onTableChange(value){
     console.log(value)
     this.setState({showgraph:value})
   }
-   componentDidMount(){
-      window.addEventListener("resize", this.updateWindowDimensions());
 
-     let url = 'https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/'
-     fetch(url, {
-        method: 'GET', // or 'PUT'
-        // body: JSON.stringify(data), // data can be `string` or {object}!
-        headers:{
-          'Content-Type': 'application/json',
-          // 'Access-Control-Allow-Origin':'*'
-        }
-      }).then(res => res.json())
-      .then(res => this.setState({products:res}))
-      .catch(error => console.error('Error:', error));
-    
-      let selected = this.props.match.params.id;
-      console.log(selected);
-      let response = this.props.location.state.etf;
-      console.log(response);
-
-      if(!response){
-
-         url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
-        console.log(url);
-        fetch(url, {
-          method: 'GET', // or 'PUT'
-          // body: JSON.stringify(data), // data can be `string` or {object}!
-          headers:{
-            'Content-Type': 'application/json',
-            // 'Access-Control-Allow-Origin':'*'
-          }
-        }).then(res => res.json())
-        .then(res => this.setState({overviewdata:res,loading:false,selected:selected}))
-        .catch(error => console.error('Error:', error));
-       
-      }
-      else{
-        this.setState({overviewdata:response,loading:false,selected:selected})
-      }
+  getData(value){
+    let selected = this.props.match.params.id;
+    if(value){
+      selected = value;
     }
-
-  getData(){
-
-    this.setState({loading:true});
+    console.log(selected)
     // const Http = new XMLHttpRequest();
-    let selected = this.state.selected;
 
+    this.props.globalLoading(true);
       Promise.all([
-        fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected, {
-          method: 'GET', // or 'PUT'
-          // body: JSON.stringify(data), // data can be `string` or {object}!
-          headers:{
-            'Content-Type': 'application/json',
-            // 'Access-Control-Allow-Origin':'*'
-          }
-        }),
         fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
             method: 'GET', // or 'PUT'
             // body: JSON.stringify(data), // data can be `string` or {object}!
@@ -208,19 +169,70 @@ export default class Standard extends React.Component {
           }
         })
       ])
-      .then(([res1, res2, res3, res4, res5]) => Promise.all([res1.json(), res2.json(), res3.json(), res4.json(), res5.json()]))
-      .then(([data1, data2, data3, data4, data5]) => this.setState({
-          overviewdata: data1, 
+      .then(([res2, res3, res4, res5]) => Promise.all([res2.json(), res3.json(), res4.json(), res5.json()]))
+      .then(([data2, data3, data4, data5]) => {
+        
+        this.setState({
           historicaldata: data2,
           holdingsdata: data3,
           pricedata: data4,
-          dividenddata: data5,
-          loading: false
-      }));
+          dividendsdata: data5,  
+          selected:selected,
+        })
+        this.props.globalLoading(false);
+      });
 
   }
 
+   componentDidMount(){
+      window.addEventListener("resize", this.updateWindowDimensions());
+     let url = 'https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/'
+     fetch(url, {
+        method: 'GET', // or 'PUT'
+        // body: JSON.stringify(data), // data can be `string` or {object}!
+        headers:{
+          'Content-Type': 'application/json',
+          // 'Access-Control-Allow-Origin':'*'
+        }
+      }).then(res => res.json())
+      .then(res => this.setState({products:res}))
+      .catch(error => console.error('Error:', error));
     
+      let selected = this.props.match.params.id;
+      console.log(selected);
+      let response = this.props.location.state.etf;
+      console.log(response);
+
+      if(!response){
+
+         url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
+        fetch(url, {
+          method: 'GET', // or 'PUT'
+          // body: JSON.stringify(data), // data can be `string` or {object}!
+          headers:{
+            'Content-Type': 'application/json',
+            // 'Access-Control-Allow-Origin':'*'
+          }
+        }).then(res => res.json())
+        .then(res => this.setState({overviewdata:res,loading:false,selected:selected}))
+        .catch(error => console.error('Error:', error));
+       
+      }
+      else{
+        this.getData()
+        this.setState({overviewdata:response,loading:false,selected:selected})
+      }
+    }
+
+
+  componentWillReceiveProps(newProps){
+    if(newProps.match.params.id !== this.props.match.params.id) {
+      // this.setState({selected: newProps.match.params.id});
+      this.getData()
+    }
+
+    
+  } 
 
 
 
@@ -243,31 +255,13 @@ export default class Standard extends React.Component {
     // console.log("this is the id: ", this.props.match.params.id);
     // console.log(selected);
     // console.log('holdings: ', holdingsdata);
-    console.log('historical: ',historicaldata);
+    // console.log('historical: ',historicaldata);
     // console.log('overview: ', overviewdata);
     // console.log(data);
     let tableholdings = [];
     let tablehistorical = [];
     let tableoverview = [];
-
-    let histNAV = historicaldata.map(function(obj) {return parseFloat(obj.NAV);});
-    histNAV = histNAV.reverse()
-    let dates = historicaldata.map(function(obj){ return obj.Date})
-    dates = dates.reverse()
-    const LineChartData= {
-        
-        labels: dates,
-          datasets: [{
-          label: selected+ ' NAV',
-          //backgroundColor: 'rgb(255, 99, 132)',
-          backgroundColor: "transparent",
-          borderColor: 'rgb(255, 99, 132)',
-          borderWidth: 1,
-          pointRadius:0,
-          data: histNAV,
-        }
-        ]
-    }
+    // console.log('loading? ',this.props.globalloading)
 
     var options = {
         noDataText: 'Please load the data by clicking above!'
@@ -285,11 +279,53 @@ export default class Standard extends React.Component {
       console.log('holdingsdata is null')
       pricedata = []
     }
+    else{
+       let formattedprice = NAVComparison(pricedata,100)
+       
+
+        if(historicaldata!='null'){
+
+          var NAVPriceData = [];
+          for(var i = 0; i < historicaldata.length; i++) {
+            for(var j = 0; j < formattedprice.length; j++) {
+
+              if (historicaldata[i].Date === formattedprice[j].Date) {
+
+                let premium = 0
+                if(parseFloat(historicaldata[i].NAV)>0){
+                  premium = (parseFloat(formattedprice[j].Price)-parseFloat(historicaldata[i].NAV))/parseFloat(historicaldata[i].NAV)*100
+                }
+                
+                NAVPriceData.push({
+                  Date: historicaldata[i].Date, 
+                  NAV: historicaldata[i].NAV, 
+                  exchangeclose: formattedprice[j].Price,
+                  premium: premium
+                })
+
+              }
+            }
+          }
+
+
+          // let temp_data = historicaldata;
+          // temp_data.forEach(function(returndata) {
+
+          //   var result = formattedprice.filter(function(value) {return value['Date'] === returndata['Date'];});
+
+          //   returndata.exchangeclose = (result[0] !== undefined) ? result[0].Price : 0;
+          //   });
+          // console.log('joint ',temp_data);
+
+        }
+
+    }
+    
     if (dividenddata == 'null'){
       console.log('dividend data is null')
-      pricedata = []
+      dividenddata = []
     }
-    console.log('holdings data: ', holdingsdata)
+    // console.log('holdings data: ', holdingsdata)
     if(holdingsdata){
       if (holdingsdata.length > 0){
         tableholdings = holdingsdata.slice(1);
@@ -310,57 +346,121 @@ export default class Standard extends React.Component {
     }
     
 
+    let LineChart = <p> No Data </p>
+    if(NAVPriceData !== 'null'){
 
+      let histNAV = NAVPriceData.map(function(obj) {return parseFloat(obj.NAV);});
+      histNAV = histNAV.reverse()
+      let histPrice = NAVPriceData.map(function(obj) {return parseFloat(obj.exchangeclose);});
+      histPrice = histPrice.reverse()
+      let dates = NAVPriceData.map(function(obj){ return obj.Date})
+      dates = dates.reverse()
+      let NAVpremium = NAVPriceData.map(function(obj) {return parseFloat(obj.premium);});
+      NAVpremium = NAVpremium.reverse()
+      // const LineChartData= {
+          
+      //     labels: dates,
+      //       datasets: [{
+      //       label: selected+ ' NAV',
+      //       //backgroundColor: 'rgb(255, 99, 132)',
+      //       backgroundColor: "transparent",
+      //       borderColor: 'rgb(255, 99, 132)',
+      //       borderWidth: 1,
+      //       pointRadius:0,
+      //       data: histNAV,
+      //     },{
+      //       label: selected+ ' Price',
+      //       //backgroundColor: 'rgb(255, 99, 132)',
+      //       backgroundColor: "transparent",
+      //       borderColor: 'rgb(255, 99, 132)',
+      //       borderWidth: 1,
+      //       pointRadius:0,
+      //       data: histPrice,
+      //     }
+      //    ]
+      // }
+
+      const LineChartData= {
+          
+          labels: dates,
+            datasets: [{
+            label: selected+ ' NAV',
+            //backgroundColor: 'rgb(255, 99, 132)',
+            backgroundColor: "transparent",
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 1,
+            pointRadius:0,
+            data: NAVpremium,
+          }
+         ]
+      }
+      var lineoptions = {
+        scales:{
+           yAxes: [{
+              ticks: {
+                  min: -1,
+                  max: 1
+              }
+          }]
+        }
+
+      }
+      LineChart = <Line data={LineChartData} options={lineoptions}/>
+
+
+    }
     return (
       
       
       <div >
 
         <Nav {...this.props}/>
-        
+        <Glossary />
         <section id="Standard" style={{paddingTop:'2%'}}>
            
           <Container >
-            <Spin tip="Loading..." spinning={this.state.loading}>
+                <Spin tip="Loading Data" size="large" spinning={this.state.loading}>
         
                 
-                Search for an ETF:
-                <Select
-                  showSearch
-                  style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
-                  placeholder="Select an ETF"
-                  optionFilterProp="children"
-                  onChange={this.onChange}
-                  onFocus={onFocus}
-                  onBlur={onBlur}
-                  onSearch={onSearch}
-                  value={this.state.selected}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
+                  Search for an ETF:
+                  <Select
+                    showSearch
+                    style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
+                    placeholder="Select an ETF"
+                    optionFilterProp="children"
+                    onChange={this.onChange}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                    onSearch={onSearch}
+                    value={this.state.selected}
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  >
 
 
-                {names.map(function(name, index){
-                    return <Option value={ name }>{name}</Option>;
-                  })}
+                  {names.map(function(name, index){
+                      return <Option value={ name }>{name}</Option>;
+                    })}
 
 
-                </Select>
+                  </Select>
 
-                <Button onClick={this.getData} style={{color:'white'}}> Load Data</Button>
-
-                 
-                  <BasicOverview etf={overviewdata} />
-
+                  {/*
+                  <Button onClick={this.getData} style={{color:'white'}}> Load Data</Button>
+                  */}
+                   
+                    <BasicOverview etf={overviewdata} />
+                </Spin>
                 <Tabs onChange={callback} type="card" style={{paddingTop:"2%", backgroundColor:"white"}}>
                     <TabPane tab="Overview" key="1">
-
+                    <Spin tip="Loading Data" size="large" spinning={this.state.loading}>
                       <BootstrapTable data={tableoverview} striped pagination exportCSV>
                         <TableHeaderColumn isKey dataField='field' dataSort>Field</TableHeaderColumn>
                         <TableHeaderColumn dataField='valueoffield'>Value</TableHeaderColumn>
                       </BootstrapTable>
-
+                     </Spin>
                     </TabPane>
                     <TabPane tab="Historical NAV" key="2">
+                    <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                       <BootstrapTable data={tablehistorical} striped pagination exportCSV options={options} >
                         <TableHeaderColumn isKey dataField='Date' dataSort>Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='NAV'>NAV</TableHeaderColumn>
@@ -369,13 +469,15 @@ export default class Standard extends React.Component {
                         <TableHeaderColumn dataField='FundReturn'>FundReturn</TableHeaderColumn>
                         <TableHeaderColumn dataField='BenchmarkReturn'>BenchmarkReturn</TableHeaderColumn>
                       </BootstrapTable>
-
+                      </Spin>
 
                     </TabPane>
                     <TabPane tab="Holdings" key="3">
+
                     <Row>
                       Table<Switch onChange={this.onTableChange} />Graph
                     </Row>
+                    <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                     {showgraph ? 
                       <SectorBreakdown holdings={holdingsdata} />
                     :
@@ -388,10 +490,11 @@ export default class Standard extends React.Component {
 
                       </BootstrapTable>
                     }
+                    </Spin>
                     </TabPane>
 
                      <TabPane tab="Distributions" key="4">
-
+                     <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                       <BootstrapTable data={dividenddata} striped pagination exportCSV options={options}>
                         <TableHeaderColumn isKey dataField='Date' dataSort>Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='ExDate'>Entitled Date</TableHeaderColumn>
@@ -400,11 +503,11 @@ export default class Standard extends React.Component {
                         <TableHeaderColumn dataField='recorddate'>Record Date</TableHeaderColumn>
 
                       </BootstrapTable>
-
+                      </Spin>
                     </TabPane>
 
                      <TabPane tab="Exchange Prices" key="5">
-
+                     <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                       <BootstrapTable data={pricedata} striped pagination exportCSV options={options}>
                         <TableHeaderColumn isKey dataField='Date' dataSort>Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='Price'>Close</TableHeaderColumn>
@@ -413,14 +516,18 @@ export default class Standard extends React.Component {
                         <TableHeaderColumn dataField='Change %'>Change</TableHeaderColumn>
 
                       </BootstrapTable>
-
+                      </Spin>
                     </TabPane>
+                    
                       <TabPane tab="Graph" key="6">
-                        <Line data={LineChartData} />
+                      <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
+                        {LineChart}
+                        </Spin>
                       </TabPane>
+                    
                   </Tabs>
 
-                  </Spin>
+ 
 
           </Container>
 
@@ -430,3 +537,24 @@ export default class Standard extends React.Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    portfolioredux: state.portfolioReducer.portfolio,
+    globalloading:state.portfolioReducer.loading,
+    alloverviewdata:state.portfolioReducer.alldata
+  };
+}
+
+const mapDispatchToProps = dispatch => ({
+  createItem: item => dispatch(portfolioActions.createItem(item)),
+  deleteItem: id => dispatch(portfolioActions.deleteItem(id)),
+  globalLoading: loading => dispatch(portfolioActions.globalLoading(loading)),
+  loadalloverview: data => dispatch(portfolioActions.loadalloverview(data))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ETFPage);
+

@@ -64,6 +64,14 @@ function stringToDateMapper(_date,_format,_delimiter)
     return formatedDate;
   }
 
+function standardiseDate(date){
+  var datearray = date.split(" ")
+  var month =  datearray[0]
+  var day = datearray[1].substring(0,2)
+  var year = datearray[2]
+  return day+"/"+month+"/"+year;
+}
+
 function getReturn(data, weight, notional){
 
     // console.log("divs :", div_data);
@@ -198,10 +206,25 @@ function getCashReturn(data, notional){
     return output.reverse()
 }
 
+function NAVComparison(data, quote){
+  // console.log(data)
+  // console.log(quote)
+  let quotefactor = 1
+  if(quote){
+    quotefactor = quote;
+  }
+  let returndata = data.map(function(value){
+    return {"Date": standardiseDate(value['Date']), "Price": parseFloat(value['Price'])/quotefactor}
+  })
+
+  console.log(returndata)
+  return returndata
+}
+
 function portfolioreturn(portfolio){
     let output = [];
     for (var i = 0; i < portfolio.length; i++){
 
     }
 }
-export {standardDeviation, average, getReturn, stringToDateMapper, stringToDate, getCashReturn, portfolioreturn}
+export {standardDeviation, average, getReturn, stringToDateMapper, stringToDate, getCashReturn, portfolioreturn, NAVComparison}

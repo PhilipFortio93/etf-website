@@ -47,6 +47,18 @@ function getRandomColor() {
     return color;
 }
 
+function onBlur() {
+  console.log('blur');
+}
+
+function onFocus() {
+  console.log('focus');
+}
+
+function onSearch(val) {
+  console.log('search:', val);
+}
+
 
 class PortfolioTool extends React.Component {
 
@@ -70,6 +82,7 @@ class PortfolioTool extends React.Component {
       platform: 1,
       visible:false,
       portfolioName:'',
+      searchval:'',
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -237,8 +250,9 @@ class PortfolioTool extends React.Component {
     let precision = isNaN(notional) ? 5 : notional.toString().length - 1;
     let portfolioName = this.state.portfolioName;
     let alldata = this.props.alloverviewdata;
-    let data = {}
-    let ISFreturndata = []
+    let data = {};
+    let ISFreturndata = [];
+    let searchval = this.state.searchval;
 
     let globalloading = this.props.globalloading;
 
@@ -246,6 +260,9 @@ class PortfolioTool extends React.Component {
       return value.description;
     })
 
+    let names = this.props.portfolioredux.filter(function(){
+
+    })
 
 
     let temp_data_return = [];
@@ -686,6 +703,7 @@ class PortfolioTool extends React.Component {
 
         <Nav {...this.props}/>
 
+            
 
               <Modal
                 title={"Portfolio Construction"}
@@ -698,12 +716,30 @@ class PortfolioTool extends React.Component {
                 ]}
 
               >
-              <h5>Portfolio Name</h5>
+              {/*
+                Search for an ETF:
+                  <Select
+                    showSearch
+                    style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
+                    placeholder="Select an ETF"
+                    optionFilterProp="children"
+                    onChange={this.onChange}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                    onSearch={onSearch}
+                    value={this.state.searchval}
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  >
 
-              <Input
-                    type="text"
-                    onChange={this.updatePortfolioName}
-                 />
+
+                  {names.map(function(name, index){
+                      return <Option value={ name }>{name}</Option>;
+                    })}
+
+
+                  </Select>
+            */}
+
                 <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                    <h5>Portfolio</h5>
 
@@ -783,7 +819,7 @@ class PortfolioTool extends React.Component {
                         onChange={this.handleDateChange}
                         dateFormat="dd/MM/YYYY"
                         style={{paddingLeft:'2% !important', display: 'inline-block', width:"20%", "z-index":"1000"}}
-                        
+                        withPortal
                         showMonthDropdown
                         showYearDropdown
                         dropdownMode="select"
@@ -797,7 +833,7 @@ class PortfolioTool extends React.Component {
                         selected={this.state.endDate}
                         onChange={this.handleEndDateChange}
                         dateFormat="dd/MM/YYYY"
-                        
+                        withPortal
                         popperPlacement='top-end'
                         showMonthDropdown
                         showYearDropdown

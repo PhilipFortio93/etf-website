@@ -56,7 +56,10 @@ class Glossary extends React.Component {
     let portfolio = this.props.portfolioredux.map(function(value){
       return value.description;
     })
-
+    let overviewall = this.props.alloverviewdata;
+    let glossary = overviewall.map(function(value,index){
+      return <Panel header={value["Bloomberg Ticker"]+" - "+value["Asset Class"]+" - "+value["Long Name"]} key={index}>{value["Description"]}</Panel>
+    })
     //for key in blah blah blah
     return(
       <>  
@@ -71,7 +74,7 @@ class Glossary extends React.Component {
             onClose={this.onClose}
             visible={this.props.glossaryvisible}
           >
-          <Card>
+          <Card style={{marginBottom:'2%'}}>
 
           <h5> Current Portfolio </h5>
           <div style={{ marginTop: 8 }}>
@@ -82,10 +85,13 @@ class Glossary extends React.Component {
                </div>
 
           </Card>
-          All the high level information you need to know to get you on your way!
+          
+          <p> A list of descriptions of ETFs </p>
 
 
-          <Collapse className="glossary" bordered={false} defaultActiveKey={['1']}>
+          <Collapse className="glossary" bordered={false}>
+            {glossary}
+          {/*}
             <Panel header="ISF LN " key="1">
               <p>ISF is an ETF (see ETF Below) which tracks the FTSE 100, i.e. the biggest UK based companies. The fund 
               invests in equity (UK stocks), hence the reason it can move quite a lot in a single day. The fund itself is 
@@ -97,6 +103,9 @@ class Glossary extends React.Component {
             <Panel header="ERNS LN" key="3">
               
             </Panel>
+
+
+          */}
           </Collapse>
 
             <h4> </h4>
@@ -112,7 +121,8 @@ class Glossary extends React.Component {
 function mapStateToProps(state) {
   return {
     portfolioredux: state.portfolioReducer.portfolio,
-    glossaryvisible: state.portfolioReducer.showGlossary
+    glossaryvisible: state.portfolioReducer.showGlossary,
+    alloverviewdata:state.portfolioReducer.alldata
   };
 }
 

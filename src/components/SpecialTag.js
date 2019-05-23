@@ -93,9 +93,15 @@ class SpecialTag extends React.Component {
               console.log("got data for ETF")
               this.props.createItem({"description":this.props.etf,"data": data1,"divs":data2});
               this.props.globalLoading(false);
+
+
             }
           );
-
+              let route = {
+                pathname:"/custompage"
+              }
+              console.log(this.props)
+              // this.props.history.push(route)
       }
     }
     else{

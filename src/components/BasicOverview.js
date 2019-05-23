@@ -32,7 +32,7 @@ export default class BasicOverview extends React.Component {
 
   render(){
     let overviewdata = this.state.etf;
-    console.log(overviewdata);
+    // console.log(overviewdata);
     let basecurrency = overviewdata['Base Currency'];
     let manager = overviewdata['Manager'];
     let index = overviewdata['Benchmark Index'];

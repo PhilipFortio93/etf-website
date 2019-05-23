@@ -6,12 +6,13 @@ import BasicOverview from './components/BasicOverview';
 import {Container} from 'reactstrap';
 import DailyReturns from './tooldata/DailyReturns.json';
 import {Line, Bar} from 'react-chartjs-2';
+import Glossary from './components/Glossary';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import {
-  Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Radio, Switch, Icon
+  Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Radio, Switch, Icon, message
 } from 'antd';
 import "antd/dist/antd.css";
 import "./etfsearch.css";
@@ -91,6 +92,73 @@ class ETFSearch extends React.Component {
 
   }
 
+  addToPortfolio = (e) => {
+    e.preventDefault();
+
+    console.log('props: ', this.props)
+    this.setState({
+      visible: false,
+
+    });
+
+    let portfolio = this.props.portfolioredux.map(function(value){
+      return value.description["Bloomberg Ticker"].substr(0,4).trim();
+    })
+
+    let exist = portfolio.indexOf(this.props.etf["Bloomberg Ticker"].substr(0,4).trim())
+
+    if(exist==-1){ // Can't add the same ETF twice to the portfolio
+      
+      let count = portfolio.length;
+      if(count >4){
+        message.error("Your account can't have more than 5 ETFs in a portfolio");
+      }
+      if (count <5){
+        this.props.globalLoading(true);
+
+        let selected = this.props.etf["Bloomberg Ticker"].substr(0,4).trim();
+
+        console.log(selected, ' added to portfolio')
+      
+          Promise.all([
+            fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
+              method: 'GET', // or 'PUT'
+              // body: JSON.stringify(data), // data can be `string` or {object}!
+              headers:{
+                'Content-Type': 'application/json',
+                // 'Access-Control-Allow-Origin':'*'
+              }
+            }),
+            fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/dividends?etf-id='+selected, {
+                method: 'GET', // or 'PUT'
+                // body: JSON.stringify(data), // data can be `string` or {object}!
+                headers:{
+                  'Content-Type': 'application/json',
+                  // 'Access-Control-Allow-Origin':'*'
+                }
+              })
+          ])
+          .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
+          .then(([data1, data2]) => {
+              console.log("got data for ETF")
+              this.props.createItem({"description":this.props.etf,"data": data1,"divs":data2});
+              this.props.globalLoading(false);
+
+
+            }
+          );
+              let route = {
+                pathname:"/custompage"
+              }
+              console.log(this.props)
+              // this.props.history.push(route)
+      }
+    }
+    else{
+      message.error("This ETF is alrady in your portfolio!");
+    }
+    
+  }
   showModal = (value) => {
     let overviewdata = this.props.alloverviewdata;
     let selected = value;
@@ -125,7 +193,7 @@ class ETFSearch extends React.Component {
 
     let etf = this.state.etf;
     let id = this.state.id;
-
+    console.log('props in etfsearch: ',this.props)
     this.setState({
       visible: false,
     });
@@ -135,6 +203,7 @@ class ETFSearch extends React.Component {
          etf:etf
       }
     }
+
     this.props.history.push(route)
   }
 
@@ -308,7 +377,15 @@ class ETFSearch extends React.Component {
     let sortparameter = this.state.orderby;
 
     overviewdatafilter = overviewdatafilter.sort(function(a,b){
-      return parseFloat(a[sortparameter])- parseFloat(b[sortparameter]);
+      if(sortparameter=="Net Assets"){
+        // console.log(a["Bloomberg Ticker"])
+        // console.log(parseFloat(a[sortparameter].substring(4).replace(/,/g,"")))
+        return parseFloat(b[sortparameter].substring(4).replace(/,/g,""))- parseFloat(a[sortparameter].substring(4).replace(/,/g,""));
+      }
+      else{
+         return parseFloat(a[sortparameter])- parseFloat(b[sortparameter]);
+      }
+      
     })
 
     Index = overviewdatafilter.map(function(obj) {return obj["Benchmark Index"];});
@@ -320,7 +397,7 @@ class ETFSearch extends React.Component {
       return obj["Asset Class"];
     });
 
-    console.log(groupedoverview)
+    // console.log(groupedoverview)
 
     let groupedcomponent = <GroupedComponentTwo datareq={groupedoverview} />
 
@@ -330,7 +407,7 @@ class ETFSearch extends React.Component {
       <div >
 
         <Nav {...this.props}/>
-        
+         <Glossary />
         <section id="Standard" style={{paddingTop:'2%'}}>
             
              <Modal
@@ -339,7 +416,6 @@ class ETFSearch extends React.Component {
                 onCancel={this.handleCancel}
                 footer={[
                   <Button style={{width:"20%"}} key="back" type="primary"onClick={this.handleCancel}>Close</Button>,
-                  <Button style={{width:"36%", marginRight:"2%"}} key="back" type="primary"onClick={this.handleCancel}>Add to Portfolio?</Button>,
 
 
                     <Button style={{width:"36%"}} key="submit" type="primary" onClick={this.handleOk}>

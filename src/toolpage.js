@@ -693,7 +693,7 @@ class PortfolioTool extends React.Component {
                       onChange={this.handleDateChange}
                       dateFormat="dd/MM/YYYY"
                       style={{paddingLeft:'2% !important', display: 'inline-block', width:"20%"}}
-                      
+                      withPortal
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
@@ -707,7 +707,7 @@ class PortfolioTool extends React.Component {
                       selected={this.state.endDate}
                       onChange={this.handleEndDateChange}
                       dateFormat="dd/MM/YYYY"
-                      
+                      withPortal
                       popperPlacement='top-end'
                       showMonthDropdown
                       showYearDropdown
