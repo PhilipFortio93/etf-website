@@ -263,6 +263,8 @@ class ETFPage extends React.Component {
     let tableoverview = [];
     // console.log('loading? ',this.props.globalloading)
 
+    let LineChart = <p> No Data </p>
+    
     var options = {
         noDataText: 'Please load the data by clicking above!'
     };
@@ -276,7 +278,7 @@ class ETFPage extends React.Component {
       holdingsdata = []
     }
     if (pricedata == 'null'){
-      console.log('holdingsdata is null')
+      console.log('pricedata is null')
       pricedata = []
     }
     else{
@@ -307,47 +309,6 @@ class ETFPage extends React.Component {
             }
           }
 
-
-          // let temp_data = historicaldata;
-          // temp_data.forEach(function(returndata) {
-
-          //   var result = formattedprice.filter(function(value) {return value['Date'] === returndata['Date'];});
-
-          //   returndata.exchangeclose = (result[0] !== undefined) ? result[0].Price : 0;
-          //   });
-          // console.log('joint ',temp_data);
-
-        }
-
-    }
-    
-    if (dividenddata == 'null'){
-      console.log('dividend data is null')
-      dividenddata = []
-    }
-    // console.log('holdings data: ', holdingsdata)
-    if(holdingsdata){
-      if (holdingsdata.length > 0){
-        tableholdings = holdingsdata.slice(1);
-      }
-    }
-    if(historicaldata != null){
-      tablehistorical = historicaldata;
-    }
-    if(overviewdata){
-      
-      for (var key in overviewdata){
-        var pair ={
-        "field": key,
-        "valueoffield": overviewdata[key]
-        }
-        tableoverview.push(pair);
-      }
-    }
-    
-
-    let LineChart = <p> No Data </p>
-    if(NAVPriceData !== 'null'){
 
       let histNAV = NAVPriceData.map(function(obj) {return parseFloat(obj.NAV);});
       histNAV = histNAV.reverse()
@@ -394,6 +355,7 @@ class ETFPage extends React.Component {
           }
          ]
       }
+
       var lineoptions = {
         scales:{
            yAxes: [{
@@ -407,8 +369,45 @@ class ETFPage extends React.Component {
       }
       LineChart = <Line data={LineChartData} options={lineoptions}/>
 
+          // let temp_data = historicaldata;
+          // temp_data.forEach(function(returndata) {
+
+          //   var result = formattedprice.filter(function(value) {return value['Date'] === returndata['Date'];});
+
+          //   returndata.exchangeclose = (result[0] !== undefined) ? result[0].Price : 0;
+          //   });
+          // console.log('joint ',temp_data);
+
+        }
 
     }
+    
+    if (dividenddata == 'null'){
+      console.log('dividend data is null')
+      dividenddata = []
+    }
+    // console.log('holdings data: ', holdingsdata)
+    if(holdingsdata){
+      if (holdingsdata.length > 0){
+        tableholdings = holdingsdata.slice(1);
+      }
+    }
+    if(historicaldata != null){
+      tablehistorical = historicaldata;
+    }
+    if(overviewdata){
+      
+      for (var key in overviewdata){
+        var pair ={
+        "field": key,
+        "valueoffield": overviewdata[key]
+        }
+        tableoverview.push(pair);
+      }
+    }
+    
+
+    
     return (
       
       
