@@ -48,6 +48,9 @@ class _Nav extends React.Component {
       },{
         href: '/custompage',
         name: 'Portfolio Builder'
+      },{
+        href: '/tablepage',
+        name: 'Table'
       },
       // {
       //   href: '/glossary',

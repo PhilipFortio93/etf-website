@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import Demo from './Demo';
+import TablePage from './TablePage';
 import PrivacyPolicy from './PrivacyPolicy';
 import Login from './Login';
 import toolpage from './toolpage';
@@ -67,9 +67,9 @@ ReactDOM.render(
           component={PrivacyPolicy}
         />
         <Route
-          path='/demo'
+          path='/tablepage'
           exact={true}
-          component={Demo}
+          component={TablePage}
         />
         <Route render={() => <Redirect to="/"/>}/>
       </Switch>
