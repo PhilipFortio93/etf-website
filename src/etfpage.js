@@ -21,6 +21,8 @@ import {bindActionCreators} from 'redux';
 import portfolioActions from './actions/actions';
 import _ from "lodash";
 import {NAVComparison} from './components/mathsfunctions';
+var moment = require('moment');
+
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 
@@ -67,6 +69,13 @@ function stringToDate(_date,_format,_delimiter)
   function callback(key) {
     console.log(key);
   }
+
+
+const nonFailPromise = (promise) => {
+  return new Promise((resolve) => {
+    promise.then(resolve).catch(resolve);
+  })
+}
 
 class ETFPage extends React.Component {
 
@@ -134,53 +143,62 @@ class ETFPage extends React.Component {
     console.log(selected)
     // const Http = new XMLHttpRequest();
 
+    let today = moment().format("YYYY-MM-DD")
+
     this.props.globalLoading(true);
+
       Promise.all([
-        fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
+        nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Historical.json', {
             method: 'GET', // or 'PUT'
             // body: JSON.stringify(data), // data can be `string` or {object}!
             headers:{
               'Content-Type': 'application/json',
               // 'Access-Control-Allow-Origin':'*'
             }
-          }),
-        fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/holdings?etf-id='+selected, {
+          })),
+        nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Holdings.json', {
           method: 'GET', // or 'PUT'
           // body: JSON.stringify(data), // data can be `string` or {object}!
           headers:{
             'Content-Type': 'application/json',
             // 'Access-Control-Allow-Origin':'*'
           }
-        }),
-        fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/prices?etf-id='+selected, {
+        })),
+        nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/PriceHistory.json', {
           method: 'GET', // or 'PUT'
           // body: JSON.stringify(data), // data can be `string` or {object}!
           headers:{
             'Content-Type': 'application/json',
             // 'Access-Control-Allow-Origin':'*'
           }
-        }),
-        fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/dividends?etf-id='+selected, {
+        })),
+        nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Distributions.json', {
           method: 'GET', // or 'PUT'
           // body: JSON.stringify(data), // data can be `string` or {object}!
           headers:{
             'Content-Type': 'application/json',
             // 'Access-Control-Allow-Origin':'*'
           }
-        })
+        }))
       ])
-      .then(([res2, res3, res4, res5]) => Promise.all([res2.json(), res3.json(), res4.json(), res5.json()]))
+      .then(([res2, res3, res4, res5]) => Promise.all([
+        nonFailPromise(res2.json()), 
+        nonFailPromise(res3.json()), 
+        nonFailPromise(res4.json()), 
+        nonFailPromise(res5.json()),
+       ]))
       .then(([data2, data3, data4, data5]) => {
-        
+        console.log('data5:',data5)
         this.setState({
-          historicaldata: data2,
-          holdingsdata: data3,
-          pricedata: data4,
-          dividendsdata: data5,  
-          selected:selected,
+          historicaldata: data2 || [],
+          holdingsdata: data3 || [],
+          pricedata: data4 || [],
+          dividendsdata: data5 || [],  
+          selected: selected,
         })
         this.props.globalLoading(false);
-      });
+      })
+      .catch(error => console.error('Error:', error));
 
   }
 
@@ -252,6 +270,7 @@ class ETFPage extends React.Component {
     let pricedata = this.state.pricedata;
     let showgraph = this.state.showgraph;
     let screenWidth = this.state.screenWidth;
+    let alloverviewdata = this.props.alloverviewdata;
     // console.log("this is the id: ", this.props.match.params.id);
     // console.log(selected);
     // console.log('holdings: ', holdingsdata);
@@ -268,18 +287,22 @@ class ETFPage extends React.Component {
     var options = {
         noDataText: 'Please load the data by clicking above!'
     };
-
-    if (historicaldata == 'null'){
+    console.log( )
+    if (historicaldata instanceof Error){
       console.log('historical is null')
       historicaldata = []
     }
-    if (holdingsdata == 'null'){
+    if (holdingsdata instanceof Error){
       console.log('holdingsdata is null')
       holdingsdata = []
     }
-    if (pricedata == 'null'){
+    if (pricedata instanceof Error){
       console.log('pricedata is null')
       pricedata = []
+    }
+    if (dividenddata instanceof Error){
+      console.log('dividend data is null')
+      dividenddata = []
     }
     else{
        let formattedprice = NAVComparison(pricedata,100)
@@ -382,10 +405,7 @@ class ETFPage extends React.Component {
 
     }
     
-    if (dividenddata == 'null'){
-      console.log('dividend data is null')
-      dividenddata = []
-    }
+
     // console.log('holdings data: ', holdingsdata)
     if(holdingsdata){
       if (holdingsdata.length > 0){
@@ -424,22 +444,27 @@ class ETFPage extends React.Component {
                   Search for an ETF:
                   <Select
                     showSearch
-                    style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
+                    style={{ width: "100%", paddingBottom:"2%", paddingLeft:"2%"}}
                     placeholder="Select an ETF"
                     optionFilterProp="children"
                     onChange={this.onChange}
                     onFocus={onFocus}
                     onBlur={onBlur}
                     onSearch={onSearch}
-                    value={this.state.selected}
+                    value={this.state.selected +" - " + this.state.overviewdata["Long Name"]}
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
 
 
+                  {alloverviewdata.map(function(value, index){
+                        return <Option value={ value["Bloomberg Ticker"] }>{value["Bloomberg Ticker"]+" - "+value["Long Name"]}</Option>;
+                      })}
+
+                  {/*
                   {names.map(function(name, index){
                       return <Option value={ name }>{name}</Option>;
                     })}
-
+                */}
 
                   </Select>
 

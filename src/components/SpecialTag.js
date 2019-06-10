@@ -10,7 +10,14 @@ import { Link } from "react-router-dom";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import portfolioActions from '../actions/actions';
+var moment = require('moment');
 
+  const nonFailPromise = (promise) => {
+    return new Promise((resolve) => {
+      promise.then(resolve).catch(resolve);
+    })
+  }
+  
 class SpecialTag extends React.Component {
 
   constructor(){
@@ -23,6 +30,9 @@ class SpecialTag extends React.Component {
        data:{},
     }
   }
+
+
+
 
   showModal = () => {
     this.setState({
@@ -65,30 +75,33 @@ class SpecialTag extends React.Component {
       }
       if (count <5){
         this.props.globalLoading(true);
-
+        let today = moment().format("YYYY-MM-DD")
         let selected = this.props.etf["Bloomberg Ticker"].substr(0,4).trim();
 
         console.log(selected, ' added to portfolio')
       
           Promise.all([
-            fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
-              method: 'GET', // or 'PUT'
-              // body: JSON.stringify(data), // data can be `string` or {object}!
-              headers:{
-                'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin':'*'
-              }
-            }),
-            fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/dividends?etf-id='+selected, {
+            nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Historical.json', {
                 method: 'GET', // or 'PUT'
                 // body: JSON.stringify(data), // data can be `string` or {object}!
                 headers:{
                   'Content-Type': 'application/json',
                   // 'Access-Control-Allow-Origin':'*'
                 }
-              })
+              })),
+            nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Distributions.json', {
+              method: 'GET', // or 'PUT'
+              // body: JSON.stringify(data), // data can be `string` or {object}!
+              headers:{
+                'Content-Type': 'application/json',
+                // 'Access-Control-Allow-Origin':'*'
+              }
+            }))
           ])
-          .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
+          .then(([res1, res2]) => Promise.all([
+            nonFailPromise(res1.json()), 
+            nonFailPromise(res2.json())
+            ]))
           .then(([data1, data2]) => {
               console.log("got data for ETF")
               this.props.createItem({"description":this.props.etf,"data": data1,"divs":data2});

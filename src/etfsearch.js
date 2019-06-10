@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import portfolioActions from './actions/actions';
 import GroupedComponentTwo from './components/GroupedComponentTwo';
+var moment = require('moment');
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -298,15 +299,19 @@ class ETFSearch extends React.Component {
     let overviewall = this.props.alloverviewdata.length;
 
     if(!overviewall){
+
       console.log("we're getting all the data");
       this.props.globalLoading(true);
 
-      fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/alloverview', {
+      let today = moment().format("YYYY-MM-DD")
+
+      fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
         method: 'GET', // or 'PUT'
         // body: JSON.stringify(data), // data can be `string` or {object}!
         headers:{
           'Content-Type': 'application/json',
-          // 'Access-Control-Allow-Origin':'*'
+          'mode':'no-cors',
+          'Access-Control-Allow-Origin':'*'
         }
       }).then(res => res.json())
       .then(res => {
@@ -314,7 +319,10 @@ class ETFSearch extends React.Component {
         this.props.globalLoading(false);
         })
       .catch(error => console.error('Error:', error));
-      }
+    }
+
+
+
     }
 
   render() {

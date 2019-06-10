@@ -20,6 +20,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import {
   Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Collapse, Icon, Popover,Radio, Card, Steps, Drawer, Input, Form, Spin, message
 } from 'antd';
+// import etf_list from './tooldata/ETF_List.json';
 import "antd/dist/antd.css";
 import "./toolpage.css";
 import 'bootstrap/dist/css/bootstrap.css';
@@ -30,6 +31,15 @@ import portfolioActions from './actions/actions';
 import _ from "lodash";
 import "./CustomPortfolio.css";
 import StepWizard from 'react-step-wizard';
+var AWS = require('aws-sdk'); 
+var moment = require('moment');
+
+AWS.config.update({
+  region: 'eu-west-2'
+});
+var s3 = new AWS.S3();
+
+
 
 var MediaQuery = require('react-responsive');
 
@@ -103,16 +113,38 @@ class PortfolioTool extends React.Component {
 
     let overviewall = this.props.alloverviewdata.length;
 
+    // if(!overviewall){
+    //   console.log("we're getting all the data");
+    //   this.props.globalLoading(true);
+
+    //   fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/alloverview', {
+    //     method: 'GET', // or 'PUT'
+    //     // body: JSON.stringify(data), // data can be `string` or {object}!
+    //     headers:{
+    //       'Content-Type': 'application/json',
+    //       // 'Access-Control-Allow-Origin':'*'
+    //     }
+    //   }).then(res => res.json())
+    //   .then(res => {
+    //     this.props.loadalloverview(res);
+    //     this.props.globalLoading(false);
+    //     })
+    //   .catch(error => console.error('Error:', error));
+    //   }
     if(!overviewall){
+
       console.log("we're getting all the data");
       this.props.globalLoading(true);
 
-      fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/alloverview', {
+      let today = moment().format("YYYY-MM-DD")
+
+      fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
         method: 'GET', // or 'PUT'
         // body: JSON.stringify(data), // data can be `string` or {object}!
         headers:{
           'Content-Type': 'application/json',
-          // 'Access-Control-Allow-Origin':'*'
+          'mode':'no-cors',
+          'Access-Control-Allow-Origin':'*'
         }
       }).then(res => res.json())
       .then(res => {
@@ -120,7 +152,8 @@ class PortfolioTool extends React.Component {
         this.props.globalLoading(false);
         })
       .catch(error => console.error('Error:', error));
-      }
+    }
+
     }
 
 
@@ -276,7 +309,7 @@ class PortfolioTool extends React.Component {
           let div_data = value.divs;
 
           // console.log(div_data);
-          if(div_data!='null'){
+          if(!(div_data instanceof Error)){
             temp_data.forEach(function(returndata) {
               var result = div_data.filter(function(divdata) {
                 return divdata['ExDate'] === returndata['Date'];});
@@ -300,7 +333,7 @@ class PortfolioTool extends React.Component {
           })
 
           temp_data_return = getReturn(temp_data,value.weight,notional);
-          console.log('temp data: ', temp_data_return);
+          // console.log('temp data: ', temp_data_return);
 
 
           let dailyreturn_nodivs = temp_data_return.map(function(value){
@@ -371,7 +404,7 @@ class PortfolioTool extends React.Component {
 
     })
 
-    console.log('dataanalysis :',dataanalysis)
+    // console.log('dataanalysis :',dataanalysis)
 
     let graphdataarray = dataanalysis.map(function(value){
       

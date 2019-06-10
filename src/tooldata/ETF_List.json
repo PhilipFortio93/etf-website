@@ -1,0 +1,218 @@
+[
+{
+    'name' : 'ISF',
+    'curr_id': 38414, 
+    'smlID': 2507728, 
+    'header' : 'ISF Historical Data', 
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'SLXX',
+    'curr_id': 38482, 
+    'smlID': 2508476, 
+    'header' : 'SLXX Historical Data', 
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'MIDD',
+    'curr_id': 45738, 
+    'smlID': 2532096, 
+    'header' : 'MIDD Historical Data', 
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'ERNS',
+    'curr_id': 995364, 
+    'smlID': 2606954, 
+    'header' : 'ERNS Historical Data', 
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'CUKX',
+    'curr_id': 37511, 
+    'smlID': 2502543, 
+    'header' : 'CUKX Historical Data', 
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'HSBC',
+    'curr_id': 27,
+    'smlID': 2030000,
+    'header' : 'HSBC Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'RDSA',
+    'curr_id': 6593,
+    'smlID': 1000270,
+    'header' : 'RDSA Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'BP',
+    'curr_id': 284,
+    'smlID': 1159519,
+    'header' : 'BP Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'RDSB',
+    'curr_id': 8751,
+    'smlID': 1000380,
+    'header' : 'RDSB Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'DGE',
+    'curr_id': 6584,
+    'smlID': 1003330,
+    'header' : 'DGE Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'AZN',
+    'curr_id': 6565,
+    'smlID': 1160070,
+    'header' : 'AZN Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'GSK',
+    'curr_id': 22459,
+    'smlID': 25371750,
+    'header' : 'GSK Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+}, 
+{
+    'name' : 'BATS',
+    'curr_id': 279,
+    'smlID': 1159515,
+    'header' : 'BATS Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'ULVR',
+    'curr_id': 6661,
+    'smlID': 1160156,
+    'header' : 'ULVR Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'RIO',
+    'curr_id': 6597,
+    'smlID': 1160097,
+    'header' : 'RIO Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'LLOYDS',
+    'curr_id': 287,
+    'smlID': 1159522,
+    'header' : 'LLOYDS Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'PRU',
+    'curr_id': 296,
+    'smlID': 1159529,
+    'header' : 'PRU Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'BHP',
+    'curr_id': 6617,
+    'smlID': 1160116,
+    'header' : 'BHP Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+}, 
+{
+    'name' : 'RELX',
+    'curr_id': 6572,
+    'smlID': 1160077,
+    'header' : 'RELX Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'VOD',
+    'curr_id': 667,
+    'smlID': 1159844,
+    'header' : 'VOD Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'GLEN',
+    'curr_id': 13811,
+    'smlID': 1163073,
+    'header' : 'GLEN Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'CMPS',
+    'curr_id': 6738,
+    'smlID': 1160216,
+    'header' : 'CMPS Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'NG',
+    'curr_id': 6712,
+    'smlID': 1160199,
+    'header' : 'NG Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'BARC',
+    'curr_id': 282,
+    'smlID': 1159517,
+    'header' : 'BARC Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'TSCO',
+    'curr_id': 6581,
+    'smlID': 1160085,
+    'header' : 'TSCO Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+{
+    'name' : 'EXPN',
+    'curr_id': 13120,
+    'smlID': 1044550,
+    'header' : 'EXPN Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+}, 
+{
+    'name' : 'CRH',
+    'curr_id': 6664,
+    'smlID': 1160159,
+    'header' : 'CRH Historical Data ',
+    'sort_col' : 'date',
+    'action' : 'historical_data'
+},
+]
