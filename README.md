@@ -1,0 +1,1 @@
+An app that scrapes data from etf issuers (currently iShares and Vanguard) and displays relevant analytics
