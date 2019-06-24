@@ -1,0 +1,21 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "etf-tool-website-dev-20190622181030-authRole",
+            "UnauthRoleArn": "arn:aws:iam::652780609680:role/etf-tool-website-dev-20190622181030-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::652780609680:role/etf-tool-website-dev-20190622181030-authRole",
+            "Region": "eu-west-2",
+            "DeploymentBucketName": "etf-tool-website-dev-20190622181030-deployment",
+            "UnauthRoleName": "etf-tool-website-dev-20190622181030-unauthRole",
+            "StackName": "etf-tool-website-dev-20190622181030",
+            "StackId": "arn:aws:cloudformation:eu-west-2:652780609680:stack/etf-tool-website-dev-20190622181030/a503b610-9510-11e9-9138-06e776f53978"
+        },
+        "categories": {
+            "auth": {
+                "etftoolwebsite77e18eb9": {
+                    "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"2441383242550937\",\"client_secret\":\"85f60f42ccd282741e63e7c03fb60e04\"},{\"ProviderName\":\"Google\",\"client_id\":\"1043948534781-q1i5kmjck9jppok5ao128mdpj2flf2ep.apps.googleusercontent.com\",\"client_secret\":\"mWOHV_MNVTQEo8RvTSwcvDAD\"}]"
+                }
+            }
+        }
+    }
+}

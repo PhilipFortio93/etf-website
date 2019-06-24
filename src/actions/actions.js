@@ -30,11 +30,23 @@ const loadalloverview = (data) => ({
   payload: data
 });
 
+const userlogin = (user) => ({
+  type: types.LOGIN,
+  payload: user
+});
+
+const userlogout = (user) => ({
+  type: types.LOGOUT,
+  payload: user
+});
+
 export default {
   createItem,
   deleteItem,
   updateWeight,
   globalLoading,
   loadalloverview,
-  showGlossary
+  showGlossary,
+  userlogin,
+  userlogout
 };

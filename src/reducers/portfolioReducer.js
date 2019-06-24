@@ -7,10 +7,24 @@ const defaultState ={
 	portfolio: [],
 	alldata: [],
 	showGlossary: false,
+  user: null,
 };
 
 const portfolioReducer = (state = defaultState, action) => {
   switch (action.type) {
+
+    case types.LOGIN: {
+        let newState = _.cloneDeep(state);
+      newState.user = action.payload;
+      console.log(action)
+      return newState  
+    }
+
+    case types.LOGOUT: {
+        let newState = _.cloneDeep(state);
+      newState.user = null;
+      return newState  
+    }
 
   	case types.SHOW_GLOSSARY: {
   	  	let newState = _.cloneDeep(state);

@@ -17,6 +17,9 @@ import { createBrowserHistory } from "history";
 import { Router, Route, Redirect, Switch } from "react-router-dom";
 import configureStore from './store/configureStore';
 import {Provider} from 'react-redux';
+import Amplify from 'aws-amplify'
+import config from './aws-exports'
+Amplify.configure(config)
 
 const hist = createBrowserHistory();
 

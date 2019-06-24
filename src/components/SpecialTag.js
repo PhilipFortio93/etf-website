@@ -17,7 +17,7 @@ var moment = require('moment');
       promise.then(resolve).catch(resolve);
     })
   }
-  
+
 class SpecialTag extends React.Component {
 
   constructor(){
@@ -133,12 +133,13 @@ class SpecialTag extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if(newProps.etf !== this.props.etf) {
-      this.setState({value: newProps.etf});
-    }
-     if(newProps.etf["Bloomberg Ticker"].substr(0,4).trim() !== this.props.etf["Bloomberg Ticker"].substr(0,4).trim()) {
-      this.setState({id: newProps.etf["Bloomberg Ticker"].substr(0,4).trim()});
-    }
+    // console.log('props:', newProps)
+    // if(newProps.etf !== this.props.etf) {
+    //   this.setState({value: newProps.etf});
+    // }
+    //  if(newProps.etf["Bloomberg Ticker"].substr(0,4).trim() !== this.props.etf["Bloomberg Ticker"].substr(0,4).trim()) {
+    //   this.setState({id: newProps.etf["Bloomberg Ticker"].substr(0,4).trim()});
+    // }
   }
 
   componentDidMount(){

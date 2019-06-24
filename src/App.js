@@ -1,20 +1,77 @@
 import React, { Component } from 'react';
+import io from 'socket.io-client'
+import FontAwesome from 'react-fontawesome'
 import './App.css';
 import Nav from './components/Nav';
-import { Icon, Button } from 'antd';
+import { Icon, Button, Row } from 'antd';
 import { Link } from 'react-router-dom';
 import HorizontalLoginForm from './components/LoginForm';
 import Footer from './components/Footer';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import portfolioActions from './actions/actions';
+import { Auth, Hub } from 'aws-amplify'
+
+
 
 class App extends Component {
   constructor(){
     super();
+    this.state={
+      user: {},
+      disabled: ''
+    }
+    this.popup = null  
   }
 
+  componentDidMount(){
+    Hub.listen("auth", ({ payload: { event, data } }) => {
+      switch (event) {
+        case "signIn":
+          // console.log(signIn)
+          this.setState({ user: data });
+          break;
+        case "signOut":
+          this.setState({ user: null });
+          break;
+      }
+    });
+
+     Auth.currentAuthenticatedUser()
+      .then(user => {
+        this.setState({ user });
+        this.props.userlogin({user})
+      })
+      .catch(() => console.log("Not signed in"));
+    
+
+  }
+
+
   render() {
+
+
+
+    console.log(this.state.user)
+
+    function checkUser() {
+      Auth.currentAuthenticatedUser()
+        .then(user => console.log({ user }))
+        .catch(err => console.log(err))
+    }
+
+    function signOut() {
+      Auth.signOut()
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
+    }
+
+    function signIn() {
+      Auth.federatedSignIn()
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
+    }
+
     return (
       <div className="App">
         <Nav {...this.props} />
@@ -34,11 +91,10 @@ class App extends Component {
             <p>
               Or explore some of the <code><Link to="/etfsearch">detail</Link></code> behind different ETF investments.
             </p>
-
-
-
-            <HorizontalLoginForm />
-
+            <Row>
+              <Button type="primary" onClick={signIn}>Sign In</Button>
+              <Button type="primary" onClick={signOut}>Sign Out</Button>
+            </Row>
           </header>
         <Footer />
       </div>
@@ -55,7 +111,9 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch => ({
   createItem: item => dispatch(portfolioActions.createItem(item)),
-  deleteItem: id => dispatch(portfolioActions.deleteItem(id))
+  deleteItem: id => dispatch(portfolioActions.deleteItem(id)),
+  userlogin: user => dispatch(portfolioActions.userlogin(user)),
+  userlogout: user => dispatch(portfolioActions.userlogout(user))
 });
 
 export default connect(

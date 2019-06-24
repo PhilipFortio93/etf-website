@@ -1,18 +1,31 @@
 import React from 'react';
 import {
   Collapse,Navbar,NavbarToggler,NavbarBrand,Nav,
-  NavItem,NavLink,UncontrolledDropdown,DropdownToggle,DropdownMenu,DropdownItem, Dropdown, Button
+  NavItem,NavLink,UncontrolledDropdown,DropdownToggle,DropdownMenu,DropdownItem, Dropdown
 } from 'reactstrap';
 import {
   Link 
 } from 'react-router-dom';
 import TutorialModal from './TutorialModal'
-import { Icon } from 'antd';
+import { Icon, Button } from 'antd';
 import './Nav.css';
 import {bindActionCreators} from 'redux';
 import portfolioActions from '../actions/actions';
 import SpecialTag from './SpecialTag';
 import {connect} from 'react-redux';
+import { Auth } from 'aws-amplify'
+
+function checkUser() {
+  Auth.currentAuthenticatedUser()
+    .then(user => console.log({ user }))
+    .catch(err => console.log(err))
+}
+
+function signOut() {
+  Auth.signOut()
+    .then(data => console.log(data))
+    .catch(err => console.log(err))
+}
 
 class _Nav extends React.Component {
   constructor(props) {
@@ -111,9 +124,20 @@ class _Nav extends React.Component {
 
   render() {
     let tut;
+    let loggedinstatus = this.props.user;
+
+    let signedin;
+
+    if(loggedinstatus!='null' && loggedinstatus){
+      let user = this.props.user.user.attributes.email
+      signedin = <NavItem style={{color:'white'}}>Logged in as: {user}</NavItem>;
+    }
+
+
+    console.log('user: ',this.props.user)
 
     if (this.state.tutorial) {
-      tut = <NavItem><TutorialModal /></NavItem>;
+      tut = <NavItem style={{color:'white'}}><TutorialModal /></NavItem>;
     }
 
     return (
@@ -127,12 +151,15 @@ class _Nav extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
 
+            {signedin}
             {tut}
 
             <NavItem>
               <NavLink><Button onClick={this.openGlossary}>Glossary</Button></NavLink>
             </NavItem>
-
+            <NavItem>
+              <Button type="primary" onClick={checkUser}>Check User</Button>
+            </NavItem>
               {/*}
                  <Dropdown isOpen={this.state.productdownOpen} toggle={this.toggleproduct}>
                   <DropdownToggle style={{background: '#EFF2F7', color: '#642079', border: 'none', height:'39px', 'align-items': 'flex-end'}}>
@@ -169,7 +196,8 @@ class _Nav extends React.Component {
 function mapStateToProps(state) {
   return {
     portfolioredux: state.portfolioReducer.portfolio,
-    glossaryvisible: state.portfolioReducer.showGlossary
+    glossaryvisible: state.portfolioReducer.showGlossary,
+    user: state.portfolioReducer.user
   };
 }
 

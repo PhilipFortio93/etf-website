@@ -4,4 +4,6 @@ export const PORTFOLIO_UPDATE = 'PORTFOLIO_UPDATE';
 export const LOADING = 'LOADING_SCREEN';
 export const ALL_LOAD = 'ALL_LOAD';
 export const SHOW_GLOSSARY = 'SHOW_GLOSSARY';
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
 // export const TOTAL_UPDATE = 'TOTAL_UPDATE';

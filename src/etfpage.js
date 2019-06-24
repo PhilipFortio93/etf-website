@@ -111,7 +111,8 @@ class ETFPage extends React.Component {
 
   onChange(value) {
     this.setState({loading:true})
-    let selected = value;
+    let selected = value.substr(0,4).trim();
+    console.log(selected)
     let url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
 
     console.log(url);
@@ -124,11 +125,24 @@ class ETFPage extends React.Component {
       }
     }).then(res => res.json())
     .then(res => {
-      this.setState({overviewdata:res,selected:value,loading:false});
-      this.getData(value)
+      this.setState({overviewdata:res,selected:selected,loading:false});
+      // this.getData(selected)
+
+      let id = selected;
+
+      let route = {
+        pathname:"/etfsearch/"+id,
+        state:{
+           etf:res
+        }
+      }
+    this.props.history.push(route)
+
     })
     .catch(error => console.error('Error:', error));
-    
+     
+
+
   }
   onTableChange(value){
     console.log(value)
@@ -140,7 +154,7 @@ class ETFPage extends React.Component {
     if(value){
       selected = value;
     }
-    console.log(selected)
+    console.log('getting data for:',selected)
     // const Http = new XMLHttpRequest();
 
     let today = moment().format("YYYY-MM-DD")
@@ -246,7 +260,8 @@ class ETFPage extends React.Component {
   componentWillReceiveProps(newProps){
     if(newProps.match.params.id !== this.props.match.params.id) {
       // this.setState({selected: newProps.match.params.id});
-      this.getData()
+      console.log("PROPS CHANGED")
+      this.getData(newProps.match.params.id)
     }
 
     
@@ -287,7 +302,7 @@ class ETFPage extends React.Component {
     var options = {
         noDataText: 'Please load the data by clicking above!'
     };
-    console.log( )
+
     if (historicaldata instanceof Error){
       console.log('historical is null')
       historicaldata = []

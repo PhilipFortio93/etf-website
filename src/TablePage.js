@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Nav from './components/Nav';
 import Footer from './components/Footer'
+import ETFCard from './components/ETFCard'
 import {Container,Row} from 'reactstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -34,7 +35,9 @@ class TablePage extends Component {
         <Nav {...this.props} />
         <section id="Demo">
           <Container>
-            
+          <Card>
+            <ETFCard />
+           </Card>
           <Card>
                       <BootstrapTable data={overviewdata} striped pagination exportCSV >
                         <TableHeaderColumn isKey dataField='Bloomberg Ticker' dataSort>Ticker</TableHeaderColumn>

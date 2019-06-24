@@ -651,7 +651,7 @@ class PortfolioTool extends React.Component {
                 type: "time",
                 time: {
                 displayFormats: {
-                    quarter: 'MMM YYYY'
+                    quarter: 'MMM yyyy'
                   },
                 }
             }]
@@ -690,7 +690,7 @@ class PortfolioTool extends React.Component {
                 type: "time",
                 time: {
                 displayFormats: {
-                    quarter: 'MMM YYYY'
+                    quarter: 'MMM yyyy'
                   },
                 }
             }]
@@ -850,7 +850,7 @@ class PortfolioTool extends React.Component {
                     <DatePicker
                         selected={this.state.startDate}
                         onChange={this.handleDateChange}
-                        dateFormat="dd/MM/YYYY"
+                        dateFormat="dd/MM/yyyy"
                         style={{paddingLeft:'2% !important', display: 'inline-block', width:"20%", "z-index":"1000"}}
                         withPortal
                         showMonthDropdown
@@ -865,7 +865,7 @@ class PortfolioTool extends React.Component {
                     <DatePicker
                         selected={this.state.endDate}
                         onChange={this.handleEndDateChange}
-                        dateFormat="dd/MM/YYYY"
+                        dateFormat="dd/MM/yyyy"
                         withPortal
                         popperPlacement='top-end'
                         showMonthDropdown
