@@ -130,7 +130,7 @@ class _Nav extends React.Component {
 
     if(loggedinstatus!='null' && loggedinstatus){
       let user = this.props.user.user.attributes.email
-      signedin = <NavItem style={{color:'white'}}>Logged in as: {user}</NavItem>;
+      signedin = <NavItem><p style={{color:'white'}}>Logged in as: {user}</p></NavItem>;
     }
 
 
@@ -155,10 +155,10 @@ class _Nav extends React.Component {
             {tut}
 
             <NavItem>
-              <NavLink><Button onClick={this.openGlossary}>Glossary</Button></NavLink>
+              <NavLink><Button onClick={this.openGlossary}><p style={{color:'white'}}>Glossary</p></Button></NavLink>
             </NavItem>
             <NavItem>
-              <Button type="primary" onClick={checkUser}>Check User</Button>
+              <Button type="primary" onClick={checkUser}><p style={{color:'white'}}>Check User</p></Button>
             </NavItem>
               {/*}
                  <Dropdown isOpen={this.state.productdownOpen} toggle={this.toggleproduct}>
