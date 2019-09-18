@@ -1,0 +1,12 @@
+
+
+/* padding: 16px 16px; /
+word-break: break-word;
+-ms-word-break: break-all;
+}
+/ media query to override the default ant design style that is specifically for desktop devices */
+@media (max-width: 768px) {
+	.hideme {
+		display: none;
+	}
+}

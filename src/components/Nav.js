@@ -9,12 +9,14 @@ import {
 import TutorialModal from './TutorialModal'
 import { Icon, Button } from 'antd';
 import './Nav.css';
+import Glossary from './Glossary'
 import {bindActionCreators} from 'redux';
 import portfolioActions from '../actions/actions';
 import SpecialTag from './SpecialTag';
 import {connect} from 'react-redux';
 import { Auth } from 'aws-amplify'
 
+var moment = require('moment-business-days')
 function checkUser() {
   Auth.currentAuthenticatedUser()
     .then(user => console.log({ user }))
@@ -38,6 +40,7 @@ class _Nav extends React.Component {
       links: [],
       productdownOpen: false,
       tutorial: false,
+      user: {}
     };
   }
 
@@ -52,19 +55,30 @@ class _Nav extends React.Component {
     let links = [{
       href: '/',
       name: 'Home'
-    },{
-        href: '/toolpage',
-        name: 'Tutorial'
-     },{
+    },
+    // {
+    //     href: '/toolpage',
+    //     name: 'Tutorial'
+    //  },
+      {
+        href: '/toppage',
+        name: 'Top ETFs'
+      },
+     {
         href: '/etfsearch',
-        name: 'ETFs'
+        name: 'ETF Search'
       },{
         href: '/custompage',
         name: 'Portfolio Builder'
       },{
         href: '/tablepage',
-        name: 'Table'
+        name: 'Stock Lending'
       },
+      // {
+      //   href: '/compDiff',
+      //   name: 'Rebalancer'
+      // },
+
       // {
       //   href: '/glossary',
       //   name: 'Glossary'
@@ -99,6 +113,38 @@ class _Nav extends React.Component {
   }
   componentDidMount() {
     this.updateLinks(this.props);
+
+      let overviewall = this.props.alloverviewdata.length;
+      if(!overviewall){
+
+        console.log("we're getting all the data");
+        this.props.globalLoading(true);
+
+        let today = moment().format("YYYY-MM-DD")
+
+        fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
+          method: 'GET', // or 'PUT'
+          // body: JSON.stringify(data), // data can be `string` or {object}!
+          headers:{
+            'Content-Type': 'application/json',
+            'mode':'no-cors',
+            'Access-Control-Allow-Origin':'*'
+          }
+        }).then(res => res.json())
+        .then(res => {
+          this.props.loadalloverview(res);
+          this.props.globalLoading(false);
+          })
+        .catch(error => console.error('Error:', error));
+      }
+
+     Auth.currentAuthenticatedUser()
+      .then(user => {
+        this.setState({ user });
+        this.props.userlogin({user})
+      })
+      .catch(() => console.log("Not signed in"));
+    
   }
 
   componentWillReceieveProps(nextProps) {
@@ -154,13 +200,12 @@ class _Nav extends React.Component {
             {signedin}
             {tut}
 
-            <NavItem>
-              <NavLink><Button onClick={this.openGlossary}><p style={{color:'white'}}>Glossary</p></Button></NavLink>
-            </NavItem>
+
+            {/*}
             <NavItem>
               <Button type="primary" onClick={checkUser}><p style={{color:'white'}}>Check User</p></Button>
             </NavItem>
-              {/*}
+              
                  <Dropdown isOpen={this.state.productdownOpen} toggle={this.toggleproduct}>
                   <DropdownToggle style={{background: '#EFF2F7', color: '#642079', border: 'none', height:'39px', 'align-items': 'flex-end'}}>
                     Products
@@ -184,10 +229,15 @@ class _Nav extends React.Component {
                 })
               }
 
+            <NavItem>
+              <NavLink><Button onClick={this.openGlossary}><p style={{color:'white'}}>Glossary</p></Button></NavLink>
+            </NavItem>
 
             </Nav>
           </Collapse>
         </Navbar>
+
+        <Glossary />
       </div>
     );
   }
@@ -197,6 +247,7 @@ function mapStateToProps(state) {
   return {
     portfolioredux: state.portfolioReducer.portfolio,
     glossaryvisible: state.portfolioReducer.showGlossary,
+    alloverviewdata:state.portfolioReducer.alldata,
     user: state.portfolioReducer.user
   };
 }
@@ -204,9 +255,11 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch => ({
   createItem: item => dispatch(portfolioActions.createItem(item)),
   deleteItem: id => dispatch(portfolioActions.deleteItem(id)),
-  updateWeight: (id, weight) => dispatch(portfolioActions.updateWeight(id,weight)),
+  globalLoading: loading => dispatch(portfolioActions.globalLoading(loading)),
+  loadalloverview: data => dispatch(portfolioActions.loadalloverview(data)),
   showGlossary: (show) => dispatch(portfolioActions.showGlossary(show))
 });
+
 
 export default connect(
   mapStateToProps,

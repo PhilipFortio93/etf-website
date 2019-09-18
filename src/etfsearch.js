@@ -8,11 +8,12 @@ import DailyReturns from './tooldata/DailyReturns.json';
 import {Line, Bar} from 'react-chartjs-2';
 import Glossary from './components/Glossary';
 import DatePicker from 'react-datepicker';
+import Paper from '@material-ui/core/Paper';
 import 'react-datepicker/dist/react-datepicker.css';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import {
-  Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Radio, Switch, Icon, message
+  Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Radio, Switch, Icon, message,
 } from 'antd';
 import "antd/dist/antd.css";
 import "./etfsearch.css";
@@ -21,7 +22,6 @@ import { Link } from "react-router-dom";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import portfolioActions from './actions/actions';
-import GroupedComponentTwo from './components/GroupedComponentTwo';
 var moment = require('moment');
 
 const TabPane = Tabs.TabPane;
@@ -58,12 +58,12 @@ const InitialState = {
       visible:false,
       selected:'Select',
       overviewdata:[],
-      loading:true,
       query:{
         "Asset Class": 'All',
         "Base Currency":'All',
         "Benchmark Index":'All',
         "Use of Income":'All',
+        "Manager":'All',
       },
       fee:2,
       group: false,
@@ -83,6 +83,7 @@ class ETFSearch extends React.Component {
     this.state = localStorage.getItem("appState") ? JSON.parse(localStorage.getItem("appState")) : InitialState;
     this.onChange = this.onChange.bind(this);
     this.onChangeAC = this.onChangeAC.bind(this);
+    this.onChangeManager = this.onChangeManager.bind(this);
     this.onChangeCurr = this.onChangeCurr.bind(this);
     this.onChangeIndex = this.onChangeIndex.bind(this);
     this.onChangeIncome = this.onChangeIncome.bind(this);
@@ -103,10 +104,10 @@ class ETFSearch extends React.Component {
     });
 
     let portfolio = this.props.portfolioredux.map(function(value){
-      return value.description["Bloomberg Ticker"].substr(0,4).trim();
+      return value.description["Bloomberg Ticker"].substr(0,value.description["Bloomberg Ticker"].indexOf(' '));
     })
 
-    let exist = portfolio.indexOf(this.props.etf["Bloomberg Ticker"].substr(0,4).trim())
+    let exist = portfolio.indexOf(this.props.etf["Bloomberg Ticker"].substr(0,this.props.etf["Bloomberg Ticker"].indexOf(' ')));
 
     if(exist==-1){ // Can't add the same ETF twice to the portfolio
       
@@ -117,7 +118,7 @@ class ETFSearch extends React.Component {
       if (count <5){
         this.props.globalLoading(true);
 
-        let selected = this.props.etf["Bloomberg Ticker"].substr(0,4).trim();
+        let selected = this.props.etf["Bloomberg Ticker"].substr(0,this.props.etf["Bloomberg Ticker"].indexOf(' '));
 
         console.log(selected, ' added to portfolio')
       
@@ -171,7 +172,7 @@ class ETFSearch extends React.Component {
       return val["Bloomberg Ticker"] == selected;
     })[0]
 
-    let id = etf["Bloomberg Ticker"].substr(0,4)
+    let id = etf["Bloomberg Ticker"].substr(0,etf["Bloomberg Ticker"].indexOf(' '))
     this.setState({
       visible: true,
       selected: value,
@@ -187,6 +188,7 @@ class ETFSearch extends React.Component {
         "Base Currency":'All',
         "Benchmark Index":'All',
         "Use of Income":'All',
+        "Manager":'All',
       }
     });
   }
@@ -236,6 +238,21 @@ class ETFSearch extends React.Component {
           "Base Currency":this.state.query["Base Currency"],
           "Benchmark Index":'All',
           "Use of Income":this.state.query["Use of Income"],
+          "Manager":this.state.query["Manager"],
+        }
+
+      });
+  }
+
+  onChangeManager(value){
+    this.setState({
+      query:
+        {
+          "Asset Class":this.state.query["Asset Class"],
+          "Base Currency":this.state.query["Base Currency"],
+          "Benchmark Index":'All',
+          "Use of Income":this.state.query["Use of Income"],
+          "Manager":value,
         }
 
       });
@@ -249,6 +266,7 @@ class ETFSearch extends React.Component {
            "Base Currency":value,
            "Benchmark Index":'All',
            "Use of Income":this.state.query["Use of Income"],
+           "Manager":this.state.query["Manager"],
         }
 
        });
@@ -262,6 +280,7 @@ class ETFSearch extends React.Component {
            "Base Currency":this.state.query["Base Currency"],
            "Benchmark Index":value,
            "Use of Income":this.state.query["Use of Income"],
+           "Manager":this.state.query["Manager"],
         }
 
        });
@@ -275,6 +294,7 @@ class ETFSearch extends React.Component {
            "Base Currency":this.state.query["Base Currency"],
            "Benchmark Index":'All',
            "Use of Income":value,
+           "Manager":this.state.query["Manager"],
         }
 
        });
@@ -283,47 +303,6 @@ class ETFSearch extends React.Component {
   handleChangeFee(value){
     this.setState({fee:value})
   }
-
-
-
-  componentWillUnmount() {
-  // Remember state for the next mount
-    localStorage.setItem('appState', JSON.stringify(this.state));
-  }
-
-
-  componentDidMount(){
-
-
-
-    let overviewall = this.props.alloverviewdata.length;
-
-    if(!overviewall){
-
-      console.log("we're getting all the data");
-      this.props.globalLoading(true);
-
-      let today = moment().format("YYYY-MM-DD")
-
-      fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
-        method: 'GET', // or 'PUT'
-        // body: JSON.stringify(data), // data can be `string` or {object}!
-        headers:{
-          'Content-Type': 'application/json',
-          'mode':'no-cors',
-          'Access-Control-Allow-Origin':'*'
-        }
-      }).then(res => res.json())
-      .then(res => {
-        this.props.loadalloverview(res);
-        this.props.globalLoading(false);
-        })
-      .catch(error => console.error('Error:', error));
-    }
-
-
-
-    }
 
   render() {
 
@@ -348,14 +327,22 @@ class ETFSearch extends React.Component {
     // let namestwo = [];
     let AssetClass = [];
     let BaseCurrency = [];
+    let ManagerList = [];
     let Index = [];
     let IncomeList = [];
     // namestwo = overviewdata.map(function(obj) {return obj["Bloomberg Ticker"];});
 
+    let portfolio = this.props.portfolioredux.map(function(value){
+      return value.description;
+    })
 
     AssetClass = overviewdata.map(function(obj) {return obj["Asset Class"];});
     AssetClass = [...new Set(AssetClass)];//AssetClass.filter(distinct);
     AssetClass.push("All");
+
+    ManagerList = overviewdata.map(function(obj) {return obj["Manager"];});
+    ManagerList = [...new Set(ManagerList)];//AssetClass.filter(distinct);
+    ManagerList.push("All");
 
     BaseCurrency = overviewdata.map(function(obj) {return obj["Base Currency"];});
     BaseCurrency = [...new Set(BaseCurrency)];
@@ -371,7 +358,7 @@ class ETFSearch extends React.Component {
         newquery[key]=query[key]
       }
     }
-    // console.log('new query: ',newquery);
+    console.log('new query: ',newquery);
     // query = {
     //   "Asset Class": assetchoice,
     //   "Base Currency": basecurr
@@ -405,9 +392,27 @@ class ETFSearch extends React.Component {
       return obj["Asset Class"];
     });
 
-    // console.log(groupedoverview)
+    console.log('groupedoverview: ',groupedoverview)
 
-    let groupedcomponent = <GroupedComponentTwo datareq={groupedoverview} />
+    // let groupedcomponent = <GroupedComponentTwo datareq={groupedoverview} />
+
+    let rows =[]
+
+    for(var key in groupedoverview){
+      
+      let products = groupedoverview[key].map(function(value, index){
+         return <SpecialTag etf={value} />
+      })
+      rows.push(<TabPane tab={key} key={key}><div style={{margin:"2%"}}>{products}</div></TabPane>)
+    }
+
+    const marks = {
+      0: '0%',
+      0.25:'0.25%',
+      1: '1%',
+      0.75: '0.75%',
+      0.5: '0.5%',
+    };
 
     return (
       
@@ -488,7 +493,7 @@ class ETFSearch extends React.Component {
                   onChange={this.onChangeAC}
                   onFocus={onFocus}
                   onBlur={onBlur}
-                  onSearch={onSearch}
+                  onSearch={this.onChangeAC}
                   value={this.state.query["Asset Class"]}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
@@ -500,7 +505,7 @@ class ETFSearch extends React.Component {
 
 
                 </Select>
-
+                <Col>
                 Base Currency:
                 <Select
                   showSearch
@@ -522,11 +527,13 @@ class ETFSearch extends React.Component {
 
 
                 </Select>
-
+                </Col>
+                <Col>
+                
                 Income:
                 <Select
                   showSearch
-                  style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
+                  style={{ width: "50%", paddingBottom:"2%", paddingLeft:"2%", paddingRight:"2%"}}
                   placeholder="Select Income"
                   optionFilterProp="children"
                   onChange={this.onChangeIncome}
@@ -544,10 +551,36 @@ class ETFSearch extends React.Component {
 
 
                 </Select>
-                 Benchmark Index:
+                </Col>
+                <Col>
+                Issuer:
                 <Select
                   showSearch
-                  style={{ width: 200, paddingBottom:"2%", paddingLeft:"2%"}}
+                  style={{ width: "50%", paddingBottom:"2%", marginLeft:"2%", paddingRight:"2%"}}
+                  placeholder="Select Manager"
+                  optionFilterProp="children"
+                  onChange={this.onChangeManager}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  onSearch={onSearch}
+                  value={this.state.query["Manager"]}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+
+
+                {ManagerList.map(function(name, index){
+                    return <Option value={ name }>{name}</Option>;
+                  })}
+
+
+                </Select>
+                
+                </Col>
+                <Col>
+                Benchmark Index:
+                <Select
+                  showSearch
+                  style={{ width: "80%", paddingBottom:"2%", paddingLeft:"2%"}}
                   placeholder="Select Index"
                   optionFilterProp="children"
                   onChange={this.onChangeIndex}
@@ -565,6 +598,8 @@ class ETFSearch extends React.Component {
 
 
                 </Select>
+
+                </Col>
                 <Col>
                 Fee
                 <Slider
@@ -574,6 +609,7 @@ class ETFSearch extends React.Component {
                   value={typeof fee === 'number' ? fee : 0}
                   step={0.01}
                   tipFormatter={(value) => `${value}%`}
+                  marks={marks}
                 />
                 </Col>
                 </Row>
@@ -603,7 +639,22 @@ class ETFSearch extends React.Component {
                 </Row>
                 </Card>
 
+                <Card style={{padding:"1%", marginTop:"2%", marginBottom:"2%"}}>
 
+                 <h5 style={{ marginBottom: 8 }}>Selected Portfolio:</h5>
+
+                   <Row style={{align:'middle'}}>
+                     
+                       <div style={{ marginTop: 8 }}>
+                         {portfolio.map(function(value, index){
+                           return <SpecialTag etf={value} />
+                        })}
+                        See details behind this portfolio <Link to='/custompage'><Icon type="right" style={{marginLeft: "auto", marginRight:"-12"}}/></Link>
+                       </div>
+                       
+                  </Row>
+
+                 </Card>
                  <Card style={{padding:"1%", marginTop:"2%", marginBottom:"2%"}}>
                  
                    <Spin tip="Loading..." spinning={this.props.globalloading}>
@@ -613,7 +664,11 @@ class ETFSearch extends React.Component {
                          <div style={{ marginTop: 8 }}>
 
 
-                           {groupedcomponent}
+                            <Paper>
+                            <Tabs defaultActiveKey="1" >
+                              {rows}
+                             </Tabs>
+                            </Paper>
 
                          </div>
             

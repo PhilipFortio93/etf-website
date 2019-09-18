@@ -8,6 +8,8 @@ import Login from './Login';
 import toolpage from './toolpage';
 import custompage from './CustomPortfolio';
 import etfpage from './etfpage';
+import compDiff from './compDiffPage';
+import TopPage from './toppage.js';
 import glossary from './components/Glossary';
 import etfsearch from './etfsearch';
 import * as serviceWorker from './serviceWorker';
@@ -73,6 +75,16 @@ ReactDOM.render(
           path='/tablepage'
           exact={true}
           component={TablePage}
+        />
+        <Route
+          path='/compDiff'
+          exact={true}
+          component={compDiff}
+        />
+        <Route
+          path='/toppage'
+          exact={true}
+          component={TopPage}
         />
         <Route render={() => <Redirect to="/"/>}/>
       </Switch>

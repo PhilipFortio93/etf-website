@@ -49,10 +49,10 @@ const portfolioReducer = (state = defaultState, action) => {
       let etf = action.payload;
       let newItem = {};
       if(state.portfolio.length<1){
-     	newItem = { id: state.portfolio.length + 1, weight: 1, description: etf.description, data:etf.data, divs:etf.divs};
+     	newItem = { id: state.portfolio.length + 1, weight: 1, description: etf.description, data:etf.data, divs:etf.divs, holdings: etf.holdings};
       }
       else{
-      	newItem = { id: state.portfolio.length + 1, weight: 0, description: etf.description, data:etf.data, divs:etf.divs};
+      	newItem = { id: state.portfolio.length + 1, weight: 0, description: etf.description, data:etf.data, divs:etf.divs, holdings: etf.holdings};
       }
       let newState = _.cloneDeep(state);
       newState.portfolio.push(newItem);

@@ -2,7 +2,7 @@ import React from 'react';
 import BasicOverview from './BasicOverview';
 
 import {
-  Tag, Modal, Spin, Button, message
+  Tag, Modal, Spin, Button, message, Tooltip
 } from 'antd';
 import "antd/dist/antd.css";
 
@@ -28,6 +28,7 @@ class SpecialTag extends React.Component {
        visible:false,
        loading:false,
        data:{},
+       isin:'',
     }
   }
 
@@ -62,7 +63,7 @@ class SpecialTag extends React.Component {
     });
 
     let portfolio = this.props.portfolioredux.map(function(value){
-      return value.description["Bloomberg Ticker"].substr(0,4).trim();
+      return value.description["Bloomberg Ticker"].substr(0,value.description["Bloomberg Ticker"].indexOf(' '));
     })
 
     let exist = portfolio.indexOf(this.props.etf["Bloomberg Ticker"].substr(0,4).trim())
@@ -76,7 +77,8 @@ class SpecialTag extends React.Component {
       if (count <5){
         this.props.globalLoading(true);
         let today = moment().format("YYYY-MM-DD")
-        let selected = this.props.etf["Bloomberg Ticker"].substr(0,4).trim();
+        let etfstring = this.props.etf["Bloomberg Ticker"]
+        let selected = etfstring.substr(0,etfstring.indexOf(' '));
 
         console.log(selected, ' added to portfolio')
       
@@ -96,15 +98,24 @@ class SpecialTag extends React.Component {
                 'Content-Type': 'application/json',
                 // 'Access-Control-Allow-Origin':'*'
               }
+            })),
+            nonFailPromise(fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/'+selected +'/Holdings.json', {
+              method: 'GET', // or 'PUT'
+              // body: JSON.stringify(data), // data can be `string` or {object}!
+              headers:{
+                'Content-Type': 'application/json',
+                // 'Access-Control-Allow-Origin':'*'
+              }
             }))
           ])
-          .then(([res1, res2]) => Promise.all([
+          .then(([res1, res2, res3]) => Promise.all([
             nonFailPromise(res1.json()), 
-            nonFailPromise(res2.json())
+            nonFailPromise(res2.json()),
+            nonFailPromise(res3.json())
             ]))
-          .then(([data1, data2]) => {
+          .then(([data1, data2, data3]) => {
               console.log("got data for ETF")
-              this.props.createItem({"description":this.props.etf,"data": data1,"divs":data2});
+              this.props.createItem({"description":this.props.etf,"data": data1,"divs":data2, "holdings":data3.slice(1,data3.length)});
               this.props.globalLoading(false);
 
 
@@ -127,39 +138,53 @@ class SpecialTag extends React.Component {
     this.setState({
       visible: false,
     });
-    console.log(this.props.etf["Bloomberg Ticker"].substr(0,4).trim(), ' removed from portfolio')
+    let etfstring = this.props.etf["Bloomberg Ticker"]
+    console.log(etfstring.substr(0,etfstring.indexOf(' ')), ' removed from portfolio')
     console.log(this.props.etf);
     this.props.deleteItem(this.props.etf);
   }
 
   componentWillReceiveProps(newProps) {
     // console.log('props:', newProps)
-    // if(newProps.etf !== this.props.etf) {
-    //   this.setState({value: newProps.etf});
-    // }
-    //  if(newProps.etf["Bloomberg Ticker"].substr(0,4).trim() !== this.props.etf["Bloomberg Ticker"].substr(0,4).trim()) {
-    //   this.setState({id: newProps.etf["Bloomberg Ticker"].substr(0,4).trim()});
+    if(newProps.etf !== this.props.etf) {
+      // console.log(newProps)
+      // console.log(newProps.etf["Bloomberg Ticker"]);
+      let newetfstring = newProps.etf["Bloomberg Ticker"]
+      // console.log(newetfstring.indexOf(' '))
+
+      if(newProps.etf["Bloomberg Ticker"]){
+        this.setState({
+          value: newProps.etf,
+          id: newetfstring.substr(0,newetfstring.indexOf(' '))
+        });
+      }
+
+
+    }
+    // let etfstring = this.props.etf["Bloomberg Ticker"]
+    // let newetfstring = newProps.etf["Bloomberg Ticker"]
+    //  if(newetfstring.substr(0,newetfstring.indexOf(' ')) !== etfstring.substr(0,etfstring.indexOf(' '))) {
+    //   this.setState({id: newetfstring.substr(0,newetfstring.indexOf(' '))});
     // }
   }
 
   componentDidMount(){
     // console.log(this.props.etf["Bloomberg Ticker"]);
-    if(this.props.etf["Bloomberg Ticker"]){
-       this.setState({value:this.props.etf, id:this.props.etf["Bloomberg Ticker"].substr(0,4).trim()})
+    let etfstring = this.props.etf["Bloomberg Ticker"]
+    if(etfstring){
+       this.setState({value:this.props.etf,isin:this.props.etf['ISIN'], id:etfstring.substr(0,etfstring.indexOf(' '))})
     }
     else{
-      this.setState({value:this.props.etf})
+      this.setState({value:this.props.etf,isin:this.props.etf['ISIN']})
     }
-    
-
-
+   
 
   }
 
   render(){
     let value = this.state.value;
     let id = this.state.id;
-
+    let ISIN = this.state.isin;
     let fee = parseFloat(value["Total Expense Ratio"])*250;
     let red = 66+fee;
     let blue = 244-fee;
@@ -184,7 +209,7 @@ class SpecialTag extends React.Component {
     return(
       <>  
               <Modal
-                title={value["Bloomberg Ticker"]}
+                title={"Basic Overview: " + value["Long Name"]}
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
@@ -195,7 +220,8 @@ class SpecialTag extends React.Component {
                   <Link to={{
                       pathname:"/etfsearch/"+id,
                       state:{
-                         etf:value
+                         etf:value,
+                         isin:ISIN,
                       }
                     }}>
                     <Button style={{width:"36%"}} key="submit" type="primary" onClick={this.handleOk}>
@@ -214,6 +240,7 @@ class SpecialTag extends React.Component {
           <Tag color={colourstring} value={value["Bloomberg Ticker"]} onClick={this.showModal}>
             {value["Bloomberg Ticker"]}
           </Tag>
+
              {/*}
         <Link to={"/etfsearch/"+id}>
           <Tag color="magenta" value={value["Bloomberg Ticker"]}>

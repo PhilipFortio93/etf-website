@@ -10,6 +10,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import portfolioActions from '../actions/actions';
 import SpecialTag from './SpecialTag';
+import ETFSearch from '../etfsearch';
 
 const Panel = Collapse.Panel;
 
@@ -70,10 +71,11 @@ class Glossary extends React.Component {
             title="Glossary"
             placement="right"
             closable={true}
-            width={"75%"}
+            width={"50%"}
             onClose={this.onClose}
             visible={this.props.glossaryvisible}
           >
+          
           <Card style={{marginBottom:'2%'}}>
 
           <h5> Current Portfolio </h5>
@@ -91,24 +93,7 @@ class Glossary extends React.Component {
 
           <Collapse className="glossary" bordered={false}>
             {glossary}
-          {/*}
-            <Panel header="ISF LN " key="1">
-              <p>ISF is an ETF (see ETF Below) which tracks the FTSE 100, i.e. the biggest UK based companies. The fund 
-              invests in equity (UK stocks), hence the reason it can move quite a lot in a single day. The fund itself is 
-              managed by blackrock and has a pretty cheap TER of 7bp</p>
-            </Panel>
-            <Panel header="SLXX LN" key="2">
-              
-            </Panel>
-            <Panel header="ERNS LN" key="3">
-              
-            </Panel>
-
-
-          */}
           </Collapse>
-
-            <h4> </h4>
 
           </Drawer> 
       

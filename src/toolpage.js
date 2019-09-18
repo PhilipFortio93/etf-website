@@ -92,36 +92,6 @@ class PortfolioTool extends React.Component {
     this.setState({alldata:DailyReturns})
     window.addEventListener("resize", this.updateWindowDimensions());
 
-    let portfoliotwo = [];
-    if(localStorage.getItem('portfoliotwo')){
-       portfoliotwo = localStorage.getItem('portfoliotwo');
-       console.log(typeof portfoliotwo)
-    }
-    
-    this.setState({portfoliotwo:portfoliotwo})
-    let selected = this.state.portfolio;
-
-    fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
-          method: 'GET', // or 'PUT'
-          // body: JSON.stringify(data), // data can be `string` or {object}!
-          headers:{
-            'Content-Type': 'application/json',
-            // 'Access-Control-Allow-Origin':'*'
-          }
-     }).then(res => res.json())
-      .then(res => this.setState({ISFdata:res}))
-      .catch(error => console.error('Error:', error));
-
-    fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/alloverview', {
-      method: 'GET', // or 'PUT'
-      // body: JSON.stringify(data), // data can be `string` or {object}!
-      headers:{
-        'Content-Type': 'application/json',
-        // 'Access-Control-Allow-Origin':'*'
-      }
-    }).then(res => res.json())
-    .then(res => this.setState({overviewall:res,loading:false}))
-    .catch(error => console.error('Error:', error));
   }
 
   updateWindowDimensions() {
@@ -657,7 +627,7 @@ class PortfolioTool extends React.Component {
         <div>
           <Row>
 
-             <Glossary />
+             
           </Row>
           </div>
 

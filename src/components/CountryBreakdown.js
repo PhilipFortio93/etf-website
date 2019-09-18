@@ -15,7 +15,7 @@ function groupBy(xs, f) {
   return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 }
 
-class SectorBreakdown extends Component {
+class CountryBreakdown extends Component {
 
     constructor(){
     super();
@@ -34,7 +34,7 @@ class SectorBreakdown extends Component {
     let count = newProps.etfcount;
 
     var sector = groupBy(holdings, function(obj) {
-      return obj["sector"];
+      return obj["country"];
     });
 
     var pielables = [];
@@ -62,7 +62,7 @@ class SectorBreakdown extends Component {
     let count = this.props.etfcount;
 
     var sector = groupBy(holdings, function(obj) {
-      return obj["sector"];
+      return obj["country"];
     });
 
     var pielables = [];
@@ -85,18 +85,12 @@ class SectorBreakdown extends Component {
   }
 
 
-
   render() {
-
-
 
     let holdings = this.props.holdings;
     let sectorweights = this.state.sectorweights;
     let pielables = this.state.pielables;
     let piecolors = this.state.piecolors;
-
-
-
 
 
     let pieoptions = 
@@ -139,11 +133,11 @@ class SectorBreakdown extends Component {
 
     return (
       <div>
-        <p> Sector Breakdown Component </p>
+        <p> Country Breakdown Component </p>
         <Doughnut data={piechartdata} options={pieoptions} />
       </div>
     );
   }
 }
 
-export default SectorBreakdown;
+export default CountryBreakdown;

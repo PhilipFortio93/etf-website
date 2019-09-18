@@ -11,6 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import Glossary from './components/Glossary';
+import CanvasGraph from './CanvasChart';
 import {
   Slider, InputNumber, Row, Col, Tooltip, Modal, Button, Select, Tabs, Spin, Tag, Card, Switch
 } from 'antd';
@@ -21,6 +22,9 @@ import {bindActionCreators} from 'redux';
 import portfolioActions from './actions/actions';
 import _ from "lodash";
 import {NAVComparison} from './components/mathsfunctions';
+import CanvasJSReact from './assets/canvasjs.react';
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
 var moment = require('moment');
 
 const TabPane = Tabs.TabPane;
@@ -87,7 +91,6 @@ class ETFPage extends React.Component {
 
     this.state = {
       visible:false,
-      products:[],
       selected:'',
       overviewdata:{},
       holdingsdata: [],
@@ -97,12 +100,14 @@ class ETFPage extends React.Component {
       loading: false,
       alldata: [],
       showgraph:false,
+      showPerf:false,
       screenWidth:null,
     };
 
     this.getData = this.getData.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onTableChange = this.onTableChange.bind(this);
+    this.onPerfChange = this.onPerfChange.bind(this);
   }
   
   updateWindowDimensions() {
@@ -111,7 +116,7 @@ class ETFPage extends React.Component {
 
   onChange(value) {
     this.setState({loading:true})
-    let selected = value.substr(0,4).trim();
+    let selected = value.substr(0,value.indexOf(' '));
     console.log(selected)
     let url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
 
@@ -140,13 +145,18 @@ class ETFPage extends React.Component {
 
     })
     .catch(error => console.error('Error:', error));
-     
-
+    
 
   }
+
   onTableChange(value){
     console.log(value)
     this.setState({showgraph:value})
+  }
+
+  onPerfChange(value){
+    console.log(value)
+    this.setState({showPerf:value})
   }
 
   getData(value){
@@ -202,7 +212,7 @@ class ETFPage extends React.Component {
         nonFailPromise(res5.json()),
        ]))
       .then(([data2, data3, data4, data5]) => {
-        console.log('data5:',data5)
+        // console.log('data5:',data5)
         this.setState({
           historicaldata: data2 || [],
           holdingsdata: data3 || [],
@@ -217,19 +227,31 @@ class ETFPage extends React.Component {
   }
 
    componentDidMount(){
-      window.addEventListener("resize", this.updateWindowDimensions());
-     let url = 'https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/'
-     fetch(url, {
-        method: 'GET', // or 'PUT'
-        // body: JSON.stringify(data), // data can be `string` or {object}!
-        headers:{
-          'Content-Type': 'application/json',
-          // 'Access-Control-Allow-Origin':'*'
-        }
-      }).then(res => res.json())
-      .then(res => this.setState({products:res}))
-      .catch(error => console.error('Error:', error));
-    
+    window.addEventListener("resize", this.updateWindowDimensions());
+    let overviewall = this.props.alloverviewdata.length;
+      if(!overviewall){
+
+        console.log("we're getting all the data");
+        this.props.globalLoading(true);
+
+        let today = moment().format("YYYY-MM-DD")
+
+        fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
+          method: 'GET', // or 'PUT'
+          // body: JSON.stringify(data), // data can be `string` or {object}!
+          headers:{
+            'Content-Type': 'application/json',
+            'mode':'no-cors',
+            'Access-Control-Allow-Origin':'*'
+          }
+        }).then(res => res.json())
+        .then(res => {
+          this.props.loadalloverview(res);
+          this.props.globalLoading(false);
+          })
+        .catch(error => console.error('Error:', error));
+      }
+
       let selected = this.props.match.params.id;
       console.log(selected);
       let response = this.props.location.state.etf;
@@ -237,7 +259,7 @@ class ETFPage extends React.Component {
 
       if(!response){
 
-         url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
+        let url='https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected;
         fetch(url, {
           method: 'GET', // or 'PUT'
           // body: JSON.stringify(data), // data can be `string` or {object}!
@@ -270,13 +292,6 @@ class ETFPage extends React.Component {
 
 
   render() {
-    //const slxx = slxxdata;
-    let names = this.state.products;
-    let username = this.state.username;
-    let password = this.state.password;
-    let token = this.state.fbook_token;
-    let fbook_name = this.state.name;
-    let fbook_id = this.state.fb_id;
     let selected = this.state.selected;
     let holdingsdata = this.state.holdingsdata;
     let historicaldata = this.state.historicaldata;
@@ -284,6 +299,7 @@ class ETFPage extends React.Component {
     let dividenddata = this.state.dividendsdata;
     let pricedata = this.state.pricedata;
     let showgraph = this.state.showgraph;
+    let showPerf = this.state.showPerf;
     let screenWidth = this.state.screenWidth;
     let alloverviewdata = this.props.alloverviewdata;
     // console.log("this is the id: ", this.props.match.params.id);
@@ -295,10 +311,12 @@ class ETFPage extends React.Component {
     let tableholdings = [];
     let tablehistorical = [];
     let tableoverview = [];
+    let histNAV = [];
     // console.log('loading? ',this.props.globalloading)
 
-    let LineChart = <p> No Data </p>
-    
+    let PremiumChart = <p> No Data </p>
+    let NAVChart = <p> No Data </p>
+
     var options = {
         noDataText: 'Please load the data by clicking above!'
     };
@@ -348,38 +366,14 @@ class ETFPage extends React.Component {
           }
 
 
-      let histNAV = NAVPriceData.map(function(obj) {return parseFloat(obj.NAV);});
-      histNAV = histNAV.reverse()
       let histPrice = NAVPriceData.map(function(obj) {return parseFloat(obj.exchangeclose);});
       histPrice = histPrice.reverse()
       let dates = NAVPriceData.map(function(obj){ return obj.Date})
       dates = dates.reverse()
       let NAVpremium = NAVPriceData.map(function(obj) {return parseFloat(obj.premium);});
       NAVpremium = NAVpremium.reverse()
-      // const LineChartData= {
-          
-      //     labels: dates,
-      //       datasets: [{
-      //       label: selected+ ' NAV',
-      //       //backgroundColor: 'rgb(255, 99, 132)',
-      //       backgroundColor: "transparent",
-      //       borderColor: 'rgb(255, 99, 132)',
-      //       borderWidth: 1,
-      //       pointRadius:0,
-      //       data: histNAV,
-      //     },{
-      //       label: selected+ ' Price',
-      //       //backgroundColor: 'rgb(255, 99, 132)',
-      //       backgroundColor: "transparent",
-      //       borderColor: 'rgb(255, 99, 132)',
-      //       borderWidth: 1,
-      //       pointRadius:0,
-      //       data: histPrice,
-      //     }
-      //    ]
-      // }
 
-      const LineChartData= {
+      const PremiumChartData= {
           
           labels: dates,
             datasets: [{
@@ -393,6 +387,9 @@ class ETFPage extends React.Component {
           }
          ]
       }
+      // let NAVChartData = {}
+
+
 
       var lineoptions = {
         scales:{
@@ -403,9 +400,21 @@ class ETFPage extends React.Component {
               }
           }]
         }
-
       }
-      LineChart = <Line data={LineChartData} options={lineoptions}/>
+
+       var NAVlineoptions = {
+        scales:{
+           yAxes: [{
+              ticks: {
+                  min: -1,
+                  max: 1
+              }
+          }]
+        }
+      } 
+
+      PremiumChart = <Line data={PremiumChartData} options={lineoptions}/>
+      
 
           // let temp_data = historicaldata;
           // temp_data.forEach(function(returndata) {
@@ -427,9 +436,38 @@ class ETFPage extends React.Component {
         tableholdings = holdingsdata.slice(1);
       }
     }
+
     if(historicaldata != null){
       tablehistorical = historicaldata;
+      // let ChartJSDate = historicaldata.map(function(obj){ return {x:parseFloat(moment(moment(obj.Date).format('D/MMM/YYYY')).unix()),y:parseFloat(obj.NAV)}})
+      // ChartJSDate = ChartJSDate.reverse().slice(0,100)
+      let ChartJSDate = historicaldata.map(function(obj){ return {x:moment(moment(obj.Date).format('D/MMM/YYYY')).toDate(),y:parseFloat(obj.NAV)}})
+      ChartJSDate = ChartJSDate.reverse()
+
+      const ChartJSoptions = {
+      theme: "light2", // "light1", "dark1", "dark2"
+      animationEnabled: true,
+      zoomEnabled: true,
+      title: {
+        text: selected+ ' Return',
+      },
+      axisY: {
+        includeZero: false
+      },
+      axisX:{
+       title: "Date",
+       gridThickness: 1,
+       // tickLength: 2000000000
+      },
+      data: [{
+          type: "area",
+          dataPoints: ChartJSDate
+        }]
+      }
+      NAVChart =  <CanvasJSChart options = {ChartJSoptions} />
+
     }
+
     if(overviewdata){
       
       for (var key in overviewdata){
@@ -475,31 +513,25 @@ class ETFPage extends React.Component {
                         return <Option value={ value["Bloomberg Ticker"] }>{value["Bloomberg Ticker"]+" - "+value["Long Name"]}</Option>;
                       })}
 
-                  {/*
-                  {names.map(function(name, index){
-                      return <Option value={ name }>{name}</Option>;
-                    })}
-                */}
-
                   </Select>
 
                   {/*
                   <Button onClick={this.getData} style={{color:'white'}}> Load Data</Button>
                   */}
-                   
+                   <Card>
                     <BasicOverview etf={overviewdata} />
+                   </Card>
                 </Spin>
                 <Tabs onChange={callback} type="card" style={{paddingTop:"2%", backgroundColor:"white"}}>
-                    <TabPane tab="Overview" key="1">
-                    <Spin tip="Loading Data" size="large" spinning={this.state.loading}>
-                      <BootstrapTable data={tableoverview} striped pagination exportCSV>
-                        <TableHeaderColumn isKey dataField='field' dataSort>Field</TableHeaderColumn>
-                        <TableHeaderColumn dataField='valueoffield'>Value</TableHeaderColumn>
-                      </BootstrapTable>
-                     </Spin>
-                    </TabPane>
-                    <TabPane tab="Historical NAV" key="2">
-                    <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
+
+                     <TabPane tab="Performance" key="1">
+                     <Row>
+                      Graph <Switch onChange={this.onPerfChange} /> Table
+                    </Row>
+                      <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
+
+                      {showPerf ? 
+
                       <BootstrapTable data={tablehistorical} striped pagination exportCSV options={options} >
                         <TableHeaderColumn isKey dataField='Date' dataSort>Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='NAV'>NAV</TableHeaderColumn>
@@ -508,19 +540,30 @@ class ETFPage extends React.Component {
                         <TableHeaderColumn dataField='FundReturn'>FundReturn</TableHeaderColumn>
                         <TableHeaderColumn dataField='BenchmarkReturn'>BenchmarkReturn</TableHeaderColumn>
                       </BootstrapTable>
-                      </Spin>
+                    :
+                      NAVChart
+                    }
 
+                        </Spin>
+
+                      </TabPane>
+
+                    <TabPane tab="Overview" key="2">
+                    <Spin tip="Loading Data" size="large" spinning={this.state.loading}>
+                      <BootstrapTable data={tableoverview} striped pagination exportCSV>
+                        <TableHeaderColumn isKey dataField='field' dataSort>Field</TableHeaderColumn>
+                        <TableHeaderColumn dataField='valueoffield'>Value</TableHeaderColumn>
+                      </BootstrapTable>
+                     </Spin>
                     </TabPane>
-                    <TabPane tab="Holdings" key="3">
 
+                    <TabPane tab="Holdings" key="3">
                     <Row>
-                      Table<Switch onChange={this.onTableChange} />Graph
+                      Graph <Switch onChange={this.onTableChange} /> Table
                     </Row>
                     <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
                     {showgraph ? 
-                      <SectorBreakdown holdings={holdingsdata} />
-                    :
-                      <BootstrapTable data={tableholdings} striped pagination options={options}>
+                       <BootstrapTable data={tableholdings} striped pagination options={options}>
                         <TableHeaderColumn isKey dataField='isin' dataSort>ISIN</TableHeaderColumn>
                         <TableHeaderColumn dataField='underlyingname'>Name</TableHeaderColumn>
                         <TableHeaderColumn dataField='country'>Country</TableHeaderColumn>
@@ -528,6 +571,9 @@ class ETFPage extends React.Component {
                         <TableHeaderColumn dataField='weight'>Weight</TableHeaderColumn>
 
                       </BootstrapTable>
+                    :
+
+                      <SectorBreakdown holdings={holdingsdata} etfcount={1}/>
                     }
                     </Spin>
                     </TabPane>
@@ -558,9 +604,9 @@ class ETFPage extends React.Component {
                       </Spin>
                     </TabPane>
                     
-                      <TabPane tab="Graph" key="6">
+                      <TabPane tab="NAV Premium" key="6">
                       <Spin tip="Loading Data" size="large" spinning={this.props.globalloading}>
-                        {LineChart}
+                        {PremiumChart}
                         </Spin>
                       </TabPane>
                     
@@ -571,6 +617,7 @@ class ETFPage extends React.Component {
           </Container>
 
         </section>
+
         <Footer/>
       </div>
     );

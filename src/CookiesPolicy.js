@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Nav from './components/Nav';
 import Button from './components/Button';
 import Footer from './components/Footer'
-import {Container,Row,Col} from 'reactstrap';
+
 
 class CookiesPolicy extends Component {
   render() {

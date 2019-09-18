@@ -66,7 +66,7 @@ export default class Login extends React.Component {
             <Row>
               <Col lg={6} xs={12}>
                 <h1>
-                  TokenBlocks
+                  Torch
                 </h1>
                 <h2>
                   Century <span style={{fontWeight: 900}}>Investing</span>

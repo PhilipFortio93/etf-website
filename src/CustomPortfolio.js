@@ -31,6 +31,9 @@ import portfolioActions from './actions/actions';
 import _ from "lodash";
 import "./CustomPortfolio.css";
 import StepWizard from 'react-step-wizard';
+import SectorBreakdown from './components/SectorBreakdown';
+import CountryBreakdown from './components/CountryBreakdown';
+
 var AWS = require('aws-sdk'); 
 var moment = require('moment');
 
@@ -104,59 +107,8 @@ class PortfolioTool extends React.Component {
     this.onPlatformChange = this.onPlatformChange.bind(this);
     this.addETF = this.addETF.bind(this);
     this.updatePortfolioName = this.updatePortfolioName.bind(this);
-    this.newPortfolio = this.newPortfolio.bind(this);
   }
   
-  componentDidMount(){
-    
-    window.addEventListener("resize", this.updateWindowDimensions());
-
-    let overviewall = this.props.alloverviewdata.length;
-
-    // if(!overviewall){
-    //   console.log("we're getting all the data");
-    //   this.props.globalLoading(true);
-
-    //   fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/alloverview', {
-    //     method: 'GET', // or 'PUT'
-    //     // body: JSON.stringify(data), // data can be `string` or {object}!
-    //     headers:{
-    //       'Content-Type': 'application/json',
-    //       // 'Access-Control-Allow-Origin':'*'
-    //     }
-    //   }).then(res => res.json())
-    //   .then(res => {
-    //     this.props.loadalloverview(res);
-    //     this.props.globalLoading(false);
-    //     })
-    //   .catch(error => console.error('Error:', error));
-    //   }
-    if(!overviewall){
-
-      console.log("we're getting all the data");
-      this.props.globalLoading(true);
-
-      let today = moment().format("YYYY-MM-DD")
-
-      fetch('https://etf-data-dumps.s3.amazonaws.com/'+today.toString()+'/AllOverviews.json', {
-        method: 'GET', // or 'PUT'
-        // body: JSON.stringify(data), // data can be `string` or {object}!
-        headers:{
-          'Content-Type': 'application/json',
-          'mode':'no-cors',
-          'Access-Control-Allow-Origin':'*'
-        }
-      }).then(res => res.json())
-      .then(res => {
-        this.props.loadalloverview(res);
-        this.props.globalLoading(false);
-        })
-      .catch(error => console.error('Error:', error));
-    }
-
-    }
-
-
 
   updateWindowDimensions() {
    this.setState({ screenWidth: window.innerWidth });
@@ -231,50 +183,50 @@ class PortfolioTool extends React.Component {
     });
   }
 
-  newPortfolio(){
+  // newPortfolio(){
 
-       this.props.globalLoading(true);
-       let selected = "ISF";
-       Promise.all([
-          fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
-            method: 'GET', // or 'PUT'
-            // body: JSON.stringify(data), // data can be `string` or {object}!
-            headers:{
-              'Content-Type': 'application/json',
-              // 'Access-Control-Allow-Origin':'*'
-            }
-          }),
-          fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/dividends?etf-id='+selected, {
-              method: 'GET', // or 'PUT'
-              // body: JSON.stringify(data), // data can be `string` or {object}!
-              headers:{
-                'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin':'*'
-              }
-            }),
-          fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected, {
-              method: 'GET', // or 'PUT'
-              // body: JSON.stringify(data), // data can be `string` or {object}!
-              headers:{
-                'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin':'*'
-              }
-            })
-        ])
-        .then(([res1, res2, res3]) => Promise.all([res1.json(), res2.json(), res3.json()]))
-        .then(([data1, data2, data3]) => {
-            this.props.createItem({"description":data3,"data": data1,"divs":data2});
-            this.props.globalLoading(false);
-          }
-        );
-  }
+  //      this.props.globalLoading(true);
+  //      let selected = "ISF";
+  //      Promise.all([
+  //         fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/historical?etf-id='+selected, {
+  //           method: 'GET', // or 'PUT'
+  //           // body: JSON.stringify(data), // data can be `string` or {object}!
+  //           headers:{
+  //             'Content-Type': 'application/json',
+  //             // 'Access-Control-Allow-Origin':'*'
+  //           }
+  //         }),
+  //         fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/dividends?etf-id='+selected, {
+  //             method: 'GET', // or 'PUT'
+  //             // body: JSON.stringify(data), // data can be `string` or {object}!
+  //             headers:{
+  //               'Content-Type': 'application/json',
+  //               // 'Access-Control-Allow-Origin':'*'
+  //             }
+  //           }),
+  //         fetch('https://xo34ffd2ah.execute-api.us-east-1.amazonaws.com/CORSenable/overview?etf-id='+selected, {
+  //             method: 'GET', // or 'PUT'
+  //             // body: JSON.stringify(data), // data can be `string` or {object}!
+  //             headers:{
+  //               'Content-Type': 'application/json',
+  //               // 'Access-Control-Allow-Origin':'*'
+  //             }
+  //           })
+  //       ])
+  //       .then(([res1, res2, res3]) => Promise.all([res1.json(), res2.json(), res3.json()]))
+  //       .then(([data1, data2, data3]) => {
+  //           this.props.createItem({"description":data3,"data": data1,"divs":data2});
+  //           this.props.globalLoading(false);
+  //         }
+  //       );
+  // }
 
   render() {
     //const slxx = slxxdata;
     let notional = this.state.notional;
     let DataSet = this.state.alldata;
     let startDate = this.state.startDate;
-
+    
     let endDate = this.state.endDate;
     let portfolioweights = this.state.portfolioweights;
     let slxxweight = portfolioweights.SLXXweight;
@@ -319,7 +271,7 @@ class PortfolioTool extends React.Component {
           }
 
           let querystartDate = new Date(startDate.getTime() - 86400000);
-
+          console.log(temp_data)
           temp_data = temp_data.filter(function(obj) {
             return stringToDateMapper(obj['Date'],"dd/mmm/yyyy","/") > querystartDate;
           });
@@ -328,6 +280,7 @@ class PortfolioTool extends React.Component {
             return stringToDateMapper(obj['Date'],"dd/mmm/yyyy","/") < endDate;
           });
 
+          
           datestemp = temp_data.map(function(value){
             return value['Date']
           })
@@ -399,12 +352,39 @@ class PortfolioTool extends React.Component {
             "weighteddailycashwithdivs":weighteddailycashwithdivs,
             "cumulativeweightedreturn_withdivs":cumulativeweightedreturn_withdivs,
             "weighteddailyreturn_withdivs":weighteddailyreturn_withdivs,
-            "weight":value.weight
+            "weight":value.weight,
           }
 
     })
 
-    // console.log('dataanalysis :',dataanalysis)
+
+    let holdingsdata = [];
+    let SectorComp = <p> Add to your portfolio to see the sector breakdown </p>;
+    let CountryComp = <p> Add to your portfolio to see the sector breakdown </p>;
+    let holdings = []
+    if(this.props.portfolioredux.length > 0){
+
+       holdings = this.props.portfolioredux.map(function(value){
+       // console.log(value.holdings)
+       return value.holdings
+        })
+
+      console.log("numer of etfs: ", this.props.portfolioredux.length);
+      console.log("holdings data: ", holdings)
+
+      for(k=0; k < this.props.portfolioredux.length; k++){
+        holdingsdata = holdingsdata.concat(holdings[k])
+      }
+    
+      console.log('holdingsdata :',holdingsdata);
+
+    }
+
+    if(holdingsdata.length >0){
+      SectorComp = <SectorBreakdown holdings={holdingsdata} etfcount={this.props.portfolioredux.length}/>;
+      CountryComp = <CountryBreakdown holdings={holdingsdata} etfcount={this.props.portfolioredux.length}/>;
+    }
+
 
     let graphdataarray = dataanalysis.map(function(value){
       
@@ -457,163 +437,6 @@ class PortfolioTool extends React.Component {
       datasets:graphdataarray,
     }
 
-
-
-
-    // let platformfees=[{
-    //     id:1,
-    //     name:'H&L',
-    //     transaction:7,
-    //     ongoing:0.004
-    //     },{
-    //     id:2,
-    //     name:'Fidelity',
-    //     transaction:10,
-    //     ongoing:0.002
-    //     },{
-    //     id:3,
-    //     name:'Cofunds',
-    //     transaction:0,
-    //     ongoing:0.004
-    //     },{
-    //     id:4,
-    //     name:'AJ Bell',
-    //     transaction:2,
-    //     ongoing:0.003
-    //     },{
-    //     id:5,
-    //     name:'Transact',
-    //     transaction:11,
-    //     ongoing:0.008
-    //     }]
-
-    // let platform = this.state.platform;
-    // console.log(DataSet)
-
-
-
-    // let dates =  DataSet.map(function(obj) {
-    //   return obj['Date'];
-    // });
-
-
-
-    // let res = portfoliodata
-
-    // for(var i =1; i < portfoliodata.length;i++){
-    //     let json1 = getTotalReturn(portfoliodata[i])
-    //     let json2 = getTotalReturn(portfoliodata[i-1])
-    //     res = _(json1).concat(json2).groupBy('Date').map(_.spread(_.assign)).value();
-       
-    // }
-    // console.log('concatanated portfoliodata :',res)
-
-
-
-    // let tabledata=[]
-
-    // let isfcum = 0;
-    // let isfcumwithfee = notional*isfweight;
-    // let isfcumnotional = notional*isfweight;
-    // let slxxcumwithfee = notional*slxxweight;
-    // let slxxcumnotional = notional*slxxweight;
-    // let ernscumwithfee = notional*(1-slxxweight - isfweight);
-    // let ernscumnotional = notional*(1-slxxweight - isfweight);
-    // let slxxcum = 0;
-    // let ernscum = 0;
-    // let weightedreturn = 0;
-    // let weightedreturncum = 0;
-
-    // let weightedcumnotional = notional;
-    // let weightedcumwithfee = notional;
-
-    // let transactionfee = platformfees[platform-1].transaction;
-    // let ongoingfee = platformfees[platform-1].ongoing;
-
-    // for(var i = 0; i < DataSet.length; i++) {
-
-    //   isfcum = isfcum + parseFloat(DataSet[i].ISFDailyReturn);
-
-    //   isfcumnotional = isfcumnotional*(1+parseFloat(DataSet[i].ISFDailyReturn)/100);
-    //   isfcumwithfee = isfcumwithfee*(1+parseFloat(DataSet[i].ISFDailyReturn)/100-ongoingfee/360);; //0.4% daily fee
-
-    //   slxxcumnotional = slxxcumnotional*(1+parseFloat(DataSet[i].SLXXDailyReturn)/100);
-    //   slxxcumwithfee = slxxcumwithfee*(1+parseFloat(DataSet[i].SLXXDailyReturn)/100-ongoingfee/360);; //0.4% daily fee
-
-    //   ernscumnotional = ernscumnotional*(1+parseFloat(DataSet[i].ERNSDailyReturn)/100);
-    //   ernscumwithfee = ernscumwithfee*(1+parseFloat(DataSet[i].ERNSDailyReturn)/100-ongoingfee/360);; //0.4% daily fee
-
-    //   weightedcumnotional = isfcumnotional+slxxcumnotional+ernscumnotional;
-    //   weightedcumwithfee = isfcumwithfee+slxxcumwithfee+ernscumwithfee;//0.4% daily fee
-    //   //console.log(weightedcumwithfee)
-    //   slxxcum = slxxcum + parseFloat(DataSet[i].SLXXDailyReturn);
-    //   ernscum = ernscum + parseFloat(DataSet[i].ERNSDailyReturn);
-
-    //   weightedreturn = parseFloat(DataSet[i].ISFDailyReturn)*isfweight + parseFloat(DataSet[i].SLXXDailyReturn)*slxxweight + parseFloat(DataSet[i].ERNSDailyReturn)*(1-slxxweight-isfweight);
-
-    //   weightedreturncum  = weightedreturncum + weightedreturn;
-
-    //   var obj = {
-    //     'Date':DataSet[i]['Date'],
-    //     'ISFReturn':parseFloat(DataSet[i].ISFDailyReturn),
-    //     'ISFcum':isfcum.toString().substring(0,precision),
-    //     'ISFnotional':isfcumnotional.toString().substring(0,precision),
-    //     'ISFcumwithfee':isfcumwithfee.toString().substring(0,precision),
-    //     'slxxcumwithfee':slxxcumwithfee.toString().substring(0,precision),
-    //     'ernscumwithfee':ernscumwithfee.toString().substring(0,precision),
-    //     'weightedcumwithfee':weightedcumwithfee.toString().substring(0,precision+1),
-    //     'SLXXReturn':parseFloat(DataSet[i].SLXXDailyReturn),
-    //     'SLXXcum':slxxcum.toString().substring(0,precision),
-    //     'ERNSReturn':parseFloat(DataSet[i].ERNSDailyReturn),
-    //     'ernscum':ernscum.toString().substring(0,precision),
-    //     'weightedreturn': weightedreturn,
-    //     'weightedreturncum': weightedreturncum,
-    //   }  
-
-    //   tabledata.push(obj);
-    // }
-
-    // let ISFTR = tabledata.map(function(obj) {return parseFloat(obj.ISFcum);});
-    // let ISFTRfee = tabledata.map(function(obj) {return parseFloat(obj.ISFcumwithfee);});
-    // let ISFdaily = tabledata.map(function(obj) {return parseFloat(obj.ISFReturn);});
-
-    // let SLXXTR = tabledata.map(function(obj) {return parseFloat(obj.SLXXcum);});
-    // let SLXXdaily = tabledata.map(function(obj) {return parseFloat(obj.SLXXReturn);});
-    // let SLXXTRfee = tabledata.map(function(obj) {return parseFloat(obj.slxxcumwithfee);});
-
-    // let ERNSTR = tabledata.map(function(obj) {return parseFloat(obj.ernscum);});
-    // let ERNSdaily = tabledata.map(function(obj) {return parseFloat(obj.ERNSReturn);});
-    // let ERNSTRfee = tabledata.map(function(obj) {return parseFloat(obj.ernscumwithfee);});
-
-    // let WeightedCum = tabledata.map(function(obj) {return parseFloat(obj.weightedreturncum);});
-    // let dailyweighted = tabledata.map(function(obj) {return parseFloat(obj.weightedreturn);});
-    // let WeightedTRfee = tabledata.map(function(obj) {return parseFloat(obj.weightedcumwithfee);});
-
-    // let minISF = Math.min(...ISFTR);
-    // let minSLXX = Math.min(...SLXXTR);
-    // let minERNS = Math.min(...ERNSTR);
-    // let minWeighted = Math.min(...WeightedCum);
-
-    // let portfolioSD = standardDeviation(dailyweighted);
-    // let ISFSD = standardDeviation(ISFdaily);
-    // let SLXXSD = standardDeviation(SLXXdaily);
-    // let ERNSSD = standardDeviation(ERNSdaily);
-
-    // let portfolioTR = {
-    //   'ISFTR':ISFTR,
-    //   'SLXXTR':SLXXTR,
-    //   'ERNSTR':ERNSTR,
-    //   'WeightedCum':WeightedCum
-    // }
-
-    // let portfolioDR = {
-    //   'ISFdaily':ISFdaily,
-    //   'SLXXdaily':SLXXdaily,
-    //   'ERNSdaily':ERNSdaily,
-    //   'dailyweighted':dailyweighted
-    // }
-
-    //console.log(portfolioTR)
 
 
 
@@ -725,7 +548,6 @@ class PortfolioTool extends React.Component {
        // ShowStats = <PortfolioStateComponent data = {dataanalysis} /> 
     }
 
-    const { run, steps } = this.state;
 
     // tabledata = tabledata.reverse();
 
@@ -741,11 +563,9 @@ class PortfolioTool extends React.Component {
               <Modal
                 title={"Portfolio Construction"}
                 visible={this.state.visible}
-                onOk={this.handleOk}
                 onCancel={this.handleCancel}
                 footer={[
                   <Button style={{width:"20%"}} key="back" type="primary"onClick={this.handleCancel}>Close</Button>,
-                  <Button style={{width:"36%", marginRight:"2%"}} key="back" type="primary"onClick={this.handleCancel}>Add to Portfolio?</Button>,
                 ]}
 
               >
@@ -819,7 +639,7 @@ class PortfolioTool extends React.Component {
 
              <Glossary />
              <Button  type="primary" onClick={this.addETF}> + ETF </Button>
-             <Button  type="primary" onClick={this.newPortfolio}> Generate Initial Portfolio </Button>
+             {/*<Button  type="primary" onClick={this.newPortfolio}> Generate Initial Portfolio </Button>*/}
           </Row>
           </div>
 
@@ -905,169 +725,13 @@ class PortfolioTool extends React.Component {
                  </Card>
              {/*}
 
-             <Collapse
-              className="mainPanel"
-              bordered={false}
-              defaultActiveKey={['1','2','3','4','5','6']}
-              expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
-            >
-             
-            
-              <Panel className="quickchanges" header="Quick Inputs" key="2" style={customPanelStyle}>
-
-
-              </Panel>
-
-              
-              <Panel className="statspanel" header="Stats" key="3" style={customPanelStyle}>
-                
-              </Panel>
-               
-              <Panel className="statspanel" header="Stats" key="3" style={customPanelStyle}>
-
-              <StatsComponent 
-                weights={portfolioweights}
-                notional={notional}
-                portfolioTR={portfolioTR}
-                portfolioDR={portfolioDR}
-                />
-
-              </Panel>
-           <Panel className="tutorialplatforms" header="Platform Fees" key="4" style={customPanelStyle}>
-
-            <Col style={{'vertical-align':'top', paddingBottom:'0px'}}>
-            <div>
-                <h4 style={{'vertical-align':'middle'}}> Platform <Icon className="platformfeedetail" type="info-circle" style={{color:'blue', alignItem:'right'}} />
-                </h4>
-
-                <RadioGroup className="platformchoice" onChange={this.onPlatformChange} style={{paddingBottom:"2%"}} value={this.state.platform}>
-                  <Radio value={1}>H&L</Radio>
-                  <Radio value={2}>Fidelity</Radio>
-                  <Radio value={3}>Cofunds</Radio>
-                  <Radio value={4}>AJ Bell</Radio>
-                  <Radio value={5}>Transact</Radio>
-                </RadioGroup>
-
-            </div>
-
-                <table  class="table table-fixed" className="statstable" style={{width:'100%'}} >
-                  <thead>
-                    <tr>
-                      <th class="col-xs-2">Product</th>
-                      <th class="col-xs-2">ISF</th>
-                      <th class="col-xs-2">SLXX</th>
-                      <th class="col-xs-2">ERNS</th>
-                      <th class="col-xs-2">Portfolio</th>
-
-                    </tr>
-                  </thead>
-                  <tbody>
-
-                     <tr className="tutorialcash">
-                      <th class="col-xs-2">Investment</th>
-                      <th class="col-xs-2">{(isfweight*notional).toString().substring(0,notional.toString().length-1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2">{(slxxweight*notional).toString().substring(0,notional.toString().length-1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2">{((1-isfweight-slxxweight)*notional).toString().substring(0,notional.toString().length-1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2">{notional.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-
-                    </tr>
-
-                    <tr className="tutorialreturn">
-                      <th class="col-xs-2">Return</th>
-                      <th class="col-xs-2" style={{color: ISFTR[ISFTR.length-1] < 0 ? "red" : ""}}>{String(ISFTR[ISFTR.length-1]).substring(0,5)+"%"}</th>
-                      <th class="col-xs-2" style={{color: SLXXTR[SLXXTR.length-1] < 0 ? "red" : ""}}>{String(SLXXTR[SLXXTR.length-1]).substring(0,5)+"%"}</th>
-                      <th class="col-xs-2" style={{color: ERNSTR[ERNSTR.length-1] < 0 ? "red" : ""}}>{String(ERNSTR[ERNSTR.length-1]).substring(0,5)+"%"}</th>
-                      <th class="col-xs-2" style={{color: WeightedCum[WeightedCum.length-1] < 0 ? "red" : ""}}>{String(WeightedCum[WeightedCum.length-1]).substring(0,5)+"%"}</th>
-
-                    </tr>
-
-                    <tr className="tutorialreturncash">
-                      <th class="col-xs-2">Cash Return</th>
-                      <th class="col-xs-2" style={{color: ISFTR[ISFTR.length-1] < 0 ? "red" : ""}} >{String((ISFTR[ISFTR.length-1]/100+1)*notional*isfweight).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: SLXXTR[SLXXTR.length-1] < 0 ? "red" : ""}} >{String((SLXXTR[SLXXTR.length-1]/100+1)*notional*slxxweight).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: ERNSTR[ERNSTR.length-1] < 0 ? "red" : ""}} >{String((ERNSTR[ERNSTR.length-1]/100+1)*notional*(1-isfweight-slxxweight)).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: WeightedCum[WeightedCum.length-1] < 0 ? "red" : ""}} >{String((WeightedCum[WeightedCum.length-1]/100+1)*notional).substring(0,precision+1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-
-                    </tr>
-
-                    <Tooltip title="A higher standard deviation means historically that asset goes up or down a lot in value in a short period of time relative to other things">
-                    <tr className="tutorialSD">
-                      <th class="col-xs-2">With Platform Fees</th>
-                       
-                      <th class="col-xs-2" style={{color: ISFTRfee[ISFTRfee.length-1] < 0 ? "red" : ""}} >{String(ISFTRfee[ISFTRfee.length-1]).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: SLXXTRfee[SLXXTRfee.length-1] < 0 ? "red" : ""}} >{String((SLXXTRfee[SLXXTRfee.length-1])).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: ERNSTRfee[ERNSTRfee.length-1] < 0 ? "red" : ""}} >{String((ERNSTRfee[ERNSTRfee.length-1])).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: WeightedTRfee[WeightedTRfee.length-1] < 0 ? "red" : ""}} >{String((WeightedTRfee[WeightedTRfee.length-1])).substring(0,precision+2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-
-                    </tr>
-                    </Tooltip>
-                    <tr>
-                      <th class="col-xs-2">Transaction Fees</th>
-                      <th class="col-xs-2" style={{color: minISF < 0 ? "red" : ""}}>{0}</th>
-                      <th class="col-xs-2" style={{color: minSLXX < 0 ? "red" : ""}}>{0}</th>
-                      <th class="col-xs-2" style={{color: minERNS < 0 ? "red" : ""}}>{0}</th>
-                      <th class="col-xs-2" style={{color: minWeighted < 0 ? "red" : ""}}>{0}</th>
-
-                    </tr>
-                    <tr>
-                      <th class="col-xs-2">Holding Fees</th>
-                      <th class="col-xs-2" style={{color: minISF < 0 ? "red" : ""}}>{String(ISFTRfee[ISFTRfee.length-1]-((ISFTR[ISFTR.length-1]/100+1)*notional*isfweight)).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minSLXX < 0 ? "red" : ""}}>{String(SLXXTRfee[SLXXTRfee.length-1]-((SLXXTR[SLXXTR.length-1]/100+1)*notional*slxxweight)).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minERNS < 0 ? "red" : ""}}>{String(ERNSTRfee[ERNSTRfee.length-1]-((ERNSTR[ERNSTR.length-1]/100+1)*notional*(1-isfweight-slxxweight))).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minWeighted < 0 ? "red" : ""}}>{String(WeightedTRfee[WeightedTRfee.length-1]-((WeightedCum[WeightedCum.length-1]/100+1)*notional)).substring(0,precision+2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-
-                    </tr>
-                    <tr>
-                      <th class="col-xs-2">Total Fees</th>
-                      <th class="col-xs-2" style={{color: minISF < 0 ? "red" : ""}}>{String(ISFTRfee[ISFTRfee.length-1]-((ISFTR[ISFTR.length-1]/100+1)*notional*isfweight)).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minSLXX < 0 ? "red" : ""}}>{String(SLXXTRfee[SLXXTRfee.length-1]-((SLXXTR[SLXXTR.length-1]/100+1)*notional*slxxweight)).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minERNS < 0 ? "red" : ""}}>{String(ERNSTRfee[ERNSTRfee.length-1]-((ERNSTR[ERNSTR.length-1]/100+1)*notional*(1-isfweight-slxxweight))).substring(0,precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-                      <th class="col-xs-2" style={{color: minWeighted < 0 ? "red" : ""}}>{String(WeightedTRfee[WeightedTRfee.length-1]-((WeightedCum[WeightedCum.length-1]/100+1)*notional)).substring(0,precision+2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</th>
-
-                    </tr>
-                   </tbody>
-                  </table>
-
-             </Col>
-
-              </Panel>
-
-            
-              <Panel header="Graphs" key="5" style={customPanelStyle}>
-
-                
-   
-                  <Line data={graphalldata} options={options} />
-                
-
-              </Panel>
-              
-              <Panel header="Data Points" key="6" style={customPanelStyle}>
-                <div style={{padding:'10px'}}>
-                <BootstrapTable data={tabledata} striped pagination exportCSV>
-                    <TableHeaderColumn isKey dataField='Date' dataSort>Date</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ISFReturn'>ISF</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ISFcumwithfee'>ISF TR Fee</TableHeaderColumn>
-                    <TableHeaderColumn dataField='SLXXReturn'>SLXX</TableHeaderColumn>
-                    <TableHeaderColumn dataField='SLXXcum'>SLXX TR</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ERNSReturn'>ERNS</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ernscum'>ERNS TR</TableHeaderColumn>
-                    <TableHeaderColumn dataField='weightedreturn' dataSort>Weighted Return</TableHeaderColumn>
-                    <TableHeaderColumn dataField='weightedreturncum'>Cumulative Weighted Return </TableHeaderColumn>
-                </BootstrapTable>
-                </div>
-              </Panel>
-            </Collapse>
               */}
-                  <Card style={{margin:"1%", textAlign:"center"}}>
+                  <Card style={{padding:"2%",margin:"1%", textAlign:"center"}}>
+                  
                   {ShowCarousel}
+                
                   </Card>
-                    
                   
-                  
-            
-
-
             </Spin>
           </Container>
 
